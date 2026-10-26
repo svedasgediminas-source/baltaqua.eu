@@ -214,6 +214,7 @@ img,svg{display:block}
 .seg button{min-width:40px;height:36px;border:0;border-radius:2px;background:transparent;font:600 13.5px/1 var(--fb);letter-spacing:.08em;color:var(--ink-2)}
 .seg button:hover{color:var(--ink)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.lsel{display:none;height:36px;padding:0 6px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--bg);color:var(--ink);font:600 13px/1 var(--fb);letter-spacing:.06em;cursor:pointer}
 .listbtn{display:flex;align-items:center;gap:10px;height:46px;padding:0 14px 0 10px;border:1px solid var(--line-2);border-radius:var(--r);background:transparent;color:var(--ink);transition:border-color var(--t)}
 .listbtn:hover{border-color:var(--ink)}
 .listbtn .bagw{position:relative;display:grid}
@@ -229,12 +230,15 @@ img,svg{display:block}
 @media (max-width:1199px){.hdr-in{gap:18px}.hdr-cta{display:none}}
 @media (max-width:1099px){.logo-s{display:none}}
 @media (max-width:899px){.nav{display:none}}
+/* five language buttons: a little tighter while the nav shares the bar with them */
+@media (min-width:760px) and (max-width:1099px){.seg button{min-width:32px;padding:0 4px;font-size:12.5px;letter-spacing:.04em}.hdr-in{gap:14px}.hdr-r{gap:10px}}
 @media (max-width:759px){
   .hdr-in{min-height:58px;gap:8px}
   .logo svg{width:26px;height:26px}.logo{gap:8px}
   .logo-w{font-size:21px}
   .hdr-r{gap:8px}
-  .seg button{min-width:34px;height:34px;font-size:12.5px}
+  .seg{display:none}
+  .lsel{display:block}
   .listbtn{padding:0 10px;height:42px;border-color:transparent}
   .listbtn .ct{display:none}
 }
@@ -1164,6 +1168,7 @@ html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-moti
 /* the header row is measured (fonts load late, fallback fonts are wider): when it does not fit, the nav links get less
    padding (900+ px) and on phones the small logo mark gives way – the wordmark, LT/DE and the list button always stay */
 .hdr.lk-tight .nav a{padding:0 7px}
+.hdr.lk-tight2 .hdr-cta{display:none}
 @media (max-width:759px){.hdr.lk-tight .logo>svg{display:none}}
 
 /* ---- panel: popover under the header button (760 px+), bottom sheet on phones ---- */
@@ -1356,10 +1361,20 @@ html[data-zoom] #baLook .dlg-in{max-height:calc((100vh - var(--lk-top,80px) - 18
     </nav>
     <div class="hdr-r">
       <button type="button" class="lkbtn" id="lkBtn" aria-haspopup="dialog" aria-controls="baLook" aria-expanded="false" aria-label="Išvaizda" title="Išvaizda"><svg class="ui" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.6c-4.8 0-8.4 3.6-8.4 8.3 0 4.7 3.7 8.5 8.1 8.5 1.2 0 2-.8 2-1.8 0-.6-.3-1-.6-1.4-.3-.4-.6-.8-.6-1.4 0-1.1.9-1.9 2-1.9h2.3c2.2 0 3.6-1.7 3.6-3.8 0-3.9-3.7-6.5-8.4-6.5z"/><circle cx="7.7" cy="11.4" r="1.25"/><circle cx="10.1" cy="7.7" r="1.25"/><circle cx="14.5" cy="7.6" r="1.25"/><circle cx="17.1" cy="10.6" r="1.25"/></svg></button>
-      <div class="seg" role="group" aria-label="Kalba / Sprache">
+      <div class="seg" role="group" aria-label="Kalba / Sprache / Language / Язык / Język">
         <button type="button" data-lang="lt" aria-label="LT – lietuviškai">LT</button>
         <button type="button" data-lang="de" aria-label="DE – auf Deutsch">DE</button>
+        <button type="button" data-lang="en" aria-label="EN – in English">EN</button>
+        <button type="button" data-lang="ru" aria-label="RU – на русском">RU</button>
+        <button type="button" data-lang="pl" aria-label="PL – po polsku">PL</button>
       </div>
+      <select class="lsel" id="langSel" aria-label="Kalba / Sprache / Language / Язык / Język">
+        <option value="lt" lang="lt" label="LT">LT – lietuviškai</option>
+        <option value="de" lang="de" label="DE">DE – auf Deutsch</option>
+        <option value="en" lang="en" label="EN">EN – in English</option>
+        <option value="ru" lang="ru" label="RU">RU – на русском</option>
+        <option value="pl" lang="pl" label="PL">PL – po polsku</option>
+      </select>
       <button class="listbtn" id="listBtn" type="button" aria-haspopup="dialog" aria-controls="drawer" aria-expanded="false">
         <span class="bagw"><svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><use href="#u-list"/></svg><b class="badge zero" id="badge" aria-hidden="true">0</b></span>
         <span class="ct" aria-hidden="true"><span class="ct-l" data-t="listBtn"></span><span class="ct-v" id="lbV"></span></span>
@@ -1879,7 +1894,313 @@ de:{title:"BaltAqua – Teich- und Fischzuchttechnik",
  fAbout:"Fischzucht- und Teichtechnik für Deutschland und Litauen. Preise auf Anfrage.",colCat:"Sortiment",colInfo:"Information",
  legal:"MB „Baltgate“ · Reg.-Nr. 308175773 · Šilutės pl., Klaipėda, Litauen",
  impL:"Impressum",impLab:"Anbieter",impT:"Impressum",impRows:[["Anbieter","MB „Baltgate“ (Kleingesellschaft nach litauischem Recht, „mažoji bendrija“)"],["Registernummer","308175773"],["Register","Juridinių asmenų registras (Registrų centras, Litauen)"],["Anschrift","Šilutės pl., Klaipėda, Litauen"],["E-Mail","@mail"]],
- b2b:"Unser Angebot richtet sich ausschließlich an Unternehmer (§ 14 BGB)."}
+ b2b:"Unser Angebot richtet sich ausschließlich an Unternehmer (§ 14 BGB)."},
+en:{title:"BaltAqua – pond and fish farming equipment",
+ metaDesc:"BaltAqua – aerators, oxygen meters, bird protection nets, feeders, pumps and harvesting equipment for trout and carp farms in Lithuania and Germany. Prices on request.",
+ u1:"For farms in Lithuania and Germany",u1s:"For farms · LT · DE",u2:"Quotation based on your pond data",u3:"No-obligation enquiry",
+ n4f:"Fishing tackle – BalticBite",tagline:"Pond equipment",
+ n1:"Catalogue",n2:"How we work",n3:"Enquiry",navAria:"Main navigation",skip:"Skip to content",
+ listBtn:"Enquiry list",listAria:"Enquiry list",
+ cta:"Request a quote",cta2:"View catalogue",
+ eyebrow:"Equipment for trout and carp farms",heroT:["Oxygen, protection","and feeding –","from one supplier"],
+ text:"Aerators, oxygen meters and protection nets against herons and cormorants – selected to match your pond area, depth and fish species.",
+ spec:[["6","equipment categories"],["18","equipment types with specifications"],["LT · DE","for farms in both countries"],["230/400 V","or a solar solution"]],
+ annoK:"Diagram · pond T-1",annoD:"Depth, m",
+ secT:"Section A–A",secSub:"Where each equipment group works in the pond – click to go to the catalogue.",secWL:"water level",
+ secAria:"Pond cross-section diagram: aerator at the water surface, diffuser on the bottom, oxygen probe, protection net above the pond, feeder on the embankment, pump and seine net; depth up to 1.8 m.",
+ solEyebrow:"Catalogue · for ponds and tanks",solTitle:"What we supply",solLead:"Choose the items and tell us what you know – we will select the exact model in our quotation.",
+ solHint:"Add specific items to the enquiry list – you can change the quantities in the list.",catsL:"Categories",
+ sol:[["Aeration","Aerators and oxygen supply","Surface, paddlewheel and bottom aerators for ponds and tanks.",["Paddlewheel aerators","Diffusers and air blowers","Oxygen cones for RAS"]],
+  ["Measurement","Oxygen and water meters","Portable and stationary O₂ meters with alarm.",["Portable O₂ meters","Stationary probes","pH and temperature sensors"]],
+  ["Protection","Bird protection nets","Protection against herons and cormorants over ponds and tanks.",["Protection nets","Cables and fixings","Edge nets"]],
+  ["Feeding","Automatic feeders","Timer-controlled and solar-powered feeders for ponds.",["Automatic feeders","Timer feeders","Spare parts"]],
+  ["Water","Pumps and filters","For water exchange, filtration and UV disinfection.",["Submersible pumps","Mechanical filters","UV clarifiers"]],
+  ["Harvesting","Nets and landing nets","For catching, grading and transferring fish.",["Seine nets","Landing nets and sieves","Grading tables"]]],
+ idesc:[["Surface aeration and water circulation in large ponds.","Fine-bubble bottom aeration for deep ponds and tanks.","Pure oxygen injection in closed recirculating systems."],
+  ["For quick checks of dissolved oxygen and temperature at the pond.","For continuous measurement in the pond, with alarm.","For water quality control in ponds and tanks."],
+  ["Cover over ponds and tanks against herons and cormorants.","Steel cables, tensioners, clamps and post fixings.","Shoreline barriers that stop herons wading into the pond."],
+  ["Even feed distribution on a set schedule.","Feeding times and portions set by timer; solar power available.","Motors, spreader discs, timers and batteries."],
+  ["For water exchange, draining ponds and transfer pumping.","Drum and screen filters to retain suspended solids.","UV-C disinfection and algae control in recirculating systems."],
+  ["For catching fish in the pond; size matched to the pond.","For transferring, grading and health checks of fish.","For grading fish by size after harvesting."]],
+ pl:"Price",pq:"On request",quoteWord:"Price on request",
+ add:"Add to list",addAria:"Add to list: ",addedT:"Added to list",open:"Open",inList:"In list",
+ qtyDec:"Decrease quantity",qtyInc:"Increase quantity",remove:"Remove",unit:"pcs",pos:["item","items"],
+ howLab:"Process",howT:"How we work",howSub:"From pond data to quotation – in three steps.",
+ steps:[["Data","Pond area, depth, fish species and power supply."],["Selection","We propose aerators, meters or nets to match your needs."],["Quotation","We send you a quotation with prices by e-mail."]],
+ stepDone:"Done",stepNext:"Next",
+ qEyebrow:"Enquiry · B2B",qTitle:"A quotation for your pond",qLead:"Describe your farm and ponds – we will select the equipment and send you a price.",qLeadP:"Tell us the manufacturer, the model and what you need – we will reply by e-mail.",qTitleP:"Spare part or repair enquiry",
+ qfHead:"Enquiry form",gNeed:"Requirements",
+ fArea:"Area, ha",fDepth:"Average depth, m",vol:"Water volume",fFish:"Fish species",fPower:"Power at the pond",fNeed:"What do you need?",
+ power:["230 V","400 V (three-phase)","None – solar solution needed"],
+ modeL:"Enquiry type",mode:["New equipment","Spare part or repair"],
+ gFarm:"Farm and contact details",reqNote:"Only fields marked * are required.",
+ fCo:"Company or farm",fPerson:"Contact person",fPhone:"Phone",fCountry:"Country",country:["Lithuania","Germany","Other country"],
+ fPlace:"Delivery location",fZip:"Postcode",fCity:"Town",fVat:"VAT number",
+ vatHint:"For a company in another EU country: with a valid VAT number, the quotation can be issued without VAT (intra-Community supply).",
+ fFarm:"Farm type",farm:["Trout farm (flow-through)","Carp ponds","Recirculating system (RAS)","Other"],
+ gPonds:"Ponds and power",pondN:"Pond",pondsW:["pond","ponds"],pondAdd:"Add pond",pondRm:"Remove",pondRmA:"Remove pond ",pondAdded:"Pond added: ",pondDel:"Pond removed: ",
+ pondMax:"12 ponds entered – please describe further ponds under “What do you need?”.",
+ fishSel:["Not sure","Trout","Carp","Sturgeon","Several species or other"],volAll:"Total water volume",
+ attach:"Attach a pond plan or photos to the e-mail – you can add them in your e-mail program.",
+ gPart:"Equipment and requirement",partLead:"We will check whether we can source the required part or offer a repair.",
+ fMaker:"Manufacturer",fModel:"Model",fSerial:"Serial number",fYear:"Year of manufacture",fProb:"What is broken, or which part do you need?",
+ probPh:"E.g. the motor does not start, a new timer is needed",
+ partAttach:"Attach photos of the rating plate and the faulty part to the e-mail.",
+ partList:"Items on the enquiry list are not included in this e-mail – send them by choosing “New equipment”.",
+ errCo:"Please enter the company or farm name.",errMaker:"Please enter the manufacturer.",errProb:"Please describe what is broken or which part you need.",errYear:"Enter a year, e.g. 2019, or leave the field empty.",
+ draftL:"Save a draft in this browser",draftS:"Optional. The data stays on this device only and is deleted when you untick the box.",
+ draftOn:"Draft saved in this browser.",draftOff:"Draft deleted.",draftFail:"Could not save in this browser.",draftBack:"The draft saved in this browser has been restored.",
+ needPh:"E.g. aerators for 2 ponds and a heron net 40 × 25 m",
+ fromList:"From the enquiry list",listNone:"The list is empty – add items from the catalogue or describe your requirements below.",edit:"Edit list",
+ fSubmit:"Prepare enquiry",fNote:"The form does not send anything automatically – it prepares the text of an e-mail to info@baltaqua.eu.",
+ outTitle:"Enquiry text",outPrev:"Preview",outReady:"Ready",outLive:"The text updates when you change the form or the list.",
+ copy:"Copy text",copied:"Copied",copyFail:"Failed – select the text and copy it",mail:"Open e-mail",mailSubj:"Enquiry",
+ outHead:"Enquiry – please send this text by e-mail to info@baltaqua.eu",
+ outF:{no:"Enquiry no.",kind:"Enquiry type",co:"Company or farm",person:"Contact person",phone:"Phone",country:"Country",place:"Delivery location",vat:"VAT number",farm:"Farm type",ponds:"Ponds",area:"area",depth:"depth",total:"Total",power:"Power",items:"Items",need:"Requirements",gear:"Equipment",maker:"Manufacturer",model:"Model",serial:"Serial number",year:"Year of manufacture",prob:"Fault or part needed"},
+ mailSubjP:"Spare part or repair",mailLongBtn:"Copy and open e-mail",
+ print:"Print",printCat:"Print catalogue",printFail:"Printing could not be started in this window. Open the page in a separate tab and print it there (Ctrl+P).",
+ ps:{doc:"Document",date:"Date",to:"Recipient",toCat:"Contact",page:"Page",ponds:["Pond","Area","Depth","Volume","Fish species"],items:["No.","Code","Equipment","Specifications","Qty"],none:"The list is empty.",foot:"This enquiry is not binding. This sheet is not sent anywhere – please send the enquiry by e-mail to info@baltaqua.eu.",cat:"Catalogue",catSub:"Pond and fish farming equipment",types:"Equipment types",typesV:"18",typesS:"prices on request"},
+ catAsk:"For an enquiry, please state:",catW:"weight (from–to)",
+ ask:"Ask about this equipment",askA:"Ask about this equipment: ",askSubj:"Question",askHello:"Hello,",askAbout:"Question about equipment",askList:"In the enquiry list",askQ:"Question:",
+ partsL:"Spare parts and repairs",
+ calcBtn:"Net calculator",netT:"Protection net calculator",
+ netSub:"Net area, perimeter and number of posts – pure geometry. These are guide values: net type, mesh size and fixing will be agreed in the quotation.",
+ nDim:"Pond dimensions",nModes:["Length and width","Area only"],nL:"Pond length",nW:"Pond width",nA:"Pond area",nAHint:"Calculated as a square pond.",
+ nO:"Overhang beyond the bank",nS:"Post spacing",nDefHint:"Overhang – how far the net extends beyond the bank on each side. The starting values (1 m overhang, 6 m between posts) are only an example; adjust them to your pond.",
+ nResL:"Guide result",nAreaL:"net area",nSizeL:"Net dimensions",nPerL:"Perimeter (cable length around)",nPostL:"Posts around the perimeter",nUpTo:"spacing up to",nNone:"Enter the pond length and width.",nNoneA:"Enter the pond area.",
+ nHow:"How it is calculated",nHowL:["Net length = pond length + 2 × overhang; net width likewise.","Net area = net length × net width.","Perimeter = 2 × (net length + net width).","Posts: one at each corner and evenly spaced along the sides, so that the spacing does not exceed the chosen value.","If only the area is known: length = width = √area.","Not included: intermediate supports over large ponds and spare cable for knots and tensioning."],
+ nErr:"Enter a number.",errMin:"Minimum value: ",
+ parCalc:"Guide values",nNet:"net",nPer:"perimeter",postsW:["post","posts"],
+ errArea:"Enter the pond area (at least 0.01 ha).",errDepth:"Enter the average depth (at least 0.3 m).",
+ ready:"Enquiry text prepared",dec:"Decrease",inc:"Increase",
+ contactT:"Contact",addr:"Šilutės pl., Klaipėda, Lithuania",copyEmail:"Copy e-mail address",copyPhone:"Copy phone number",copiedX:"Copied: ",
+ trustL:"Why BaltAqua",
+ usp:[["u-spec","Matched to your pond","We propose equipment based on pond area, depth, fish species and power supply."],["u-list","One enquiry","Aeration, measurement, nets and feeding – in one list and one e-mail."],["u-pin","Lithuania and Germany","We provide quotations for fish farms in both countries."],["u-chat","Direct contact","Send your questions to <a href=\"mailto:info@baltaqua.eu\">info@baltaqua.eu</a>."]],
+ dTitle:"Enquiry list",dEmpty:"The list is empty",dEmptyText:"Add equipment from the catalogue – you can change the quantities here.",dBrowse:"View catalogue",
+ dTotal:"Total",dUse:"Continue enquiry",dClear:"Clear",cleared:"List cleared",undo:"Undo",close:"Close",liveDel:"Removed from list: ",
+ parHint:"All fields are optional. Leave anything you don't know as “Not sure” – we will clarify it in the quotation.",unk:"Not sure – please advise",unkPh:"Not sure",
+ qty:"Quantity",cfgAdd:"Add to list",cfgSave:"Save",cancel:"Cancel",
+ parBtn:"Specifications",parAria:"Specifications: ",varBtn:"Another variant",varAria:"Add another variant: ",variants:["variant","variants"],vsumAria:"Open enquiry list: ",
+ parNone:"no specifications given",parSet:"Add specifications",parEdit:"Edit specifications",parSetAria:"Add specifications: ",parEditAria:"Edit specifications: ",parSaved:"Specifications saved: ",
+ errNum:"Enter a number (e.g. 1.5) or leave the field empty.",errInt:"Enter a whole number or leave the field empty.",errMax:"Maximum value: ",
+ nb:"The enquiry is not binding.",
+ listFull:"The list already has 60 lines – no more can be added. Please describe other equipment in the form field “What do you need?”.",
+ parCalcSq:"Guide values, as a square pond",phArea:"e.g. 1.5",phDepth:"e.g. 1.8",
+ mailLong:"The enquiry is too long for an e-mail link. Clicking “Copy and open e-mail” copies the full text and opens an e-mail to info@baltaqua.eu – paste the text into it (Ctrl+V).",
+ mailShort:"Please paste the copied enquiry text here.",mailCopied:"Text copied – paste it into the e-mail.",
+ privL:"Privacy",privLab:"This website",privT:"Privacy",
+ pv1:"The enquiry list with the specifications you entered, as well as your language and appearance choices, is stored only in this browser's local storage (localStorage). Form fields are saved only if you tick “Save a draft in this browser” yourself.",
+ pv2:"Your enquiry reaches us only when you send it yourself by e-mail from your own e-mail program. The website itself does not transmit any data.",
+ pv3:"This website does not use any analytics, advertising or tracking tools and does not load anything from third-party servers. The fonts are embedded in the page.",
+ pv4:"Data protection questions:",pvClr:"Delete saved data",pvDone:"The data saved in this browser has been deleted.",ok:"OK",
+ fAbout:"Fish farming and pond equipment for Lithuania and Germany. Prices on request.",colCat:"Catalogue",colInfo:"Information",
+ legal:"MB “Baltgate” · company code 308175773 · Šilutės pl., Klaipėda, Lithuania",
+ impL:"Company details",impLab:"Seller",impT:"Company details",impRows:[["Company","MB “Baltgate” (small partnership under Lithuanian law, “mažoji bendrija”)"],["Company code","308175773"],["Register","Register of Legal Entities, State Enterprise Centre of Registers (Lithuania)"],["Address","Šilutės pl., Klaipėda, Lithuania"],["E-mail","@mail"]],
+ b2b:"We provide quotations to business customers only – companies and farms."},
+ru:{title:"BaltAqua – оборудование для прудов и рыбоводства",
+ metaDesc:"BaltAqua – аэраторы, оксиметры, защитные сети, кормушки, насосы и оборудование для облова для форелевых и карповых хозяйств в Литве и Германии. Цены – по запросу.",
+ u1:"Для хозяйств в Литве и Германии",u1s:"Хозяйствам · LT · DE",u2:"Предложение по данным вашего пруда",u3:"Запрос ни к чему не обязывает",
+ n4f:"Рыболовные снасти – BalticBite",tagline:"Оборудование для прудов",
+ n1:"Каталог",n2:"Как мы работаем",n3:"Запрос",navAria:"Основная навигация",skip:"Перейти к содержанию",
+ listBtn:"Список запроса",listAria:"Список запроса",
+ cta:"Получить предложение",cta2:"Смотреть каталог",
+ eyebrow:"Оборудование для форелевых и карповых хозяйств",heroT:["Кислород, защита","и кормление –","в одном месте"],
+ text:"Аэраторы, оксиметры, защитные сети от цапель и бакланов. Подбираем по площади и глубине вашего пруда и виду рыбы.",
+ spec:[["6","категорий оборудования"],["18","типов оборудования с параметрами"],["LT · DE","для хозяйств в обеих странах"],["230/400 V","или солнечное решение"]],
+ annoK:"Схема · пруд T-1",annoD:"Глубина, m",
+ secT:"Разрез A–A",secSub:"Где в пруду работает каждая группа оборудования – нажмите, чтобы перейти в каталог.",secWL:"уровень воды",
+ secAria:"Схема разреза пруда: аэратор на поверхности воды, диффузор на дне, датчик кислорода, защитная сеть над прудом, кормушка на дамбе, насос и закидной невод; глубина до 1,8 m.",
+ solEyebrow:"Каталог · для прудов и бассейнов",solTitle:"Что мы поставляем",solLead:"Выберите позиции и укажите то, что знаете, – точную модель подберём в предложении.",
+ solHint:"Добавляйте конкретные позиции в список запроса – количество можно изменить в списке.",catsL:"Категории",
+ sol:[["Аэрация","Аэраторы и подача кислорода","Поверхностные, лопастные и донные аэраторы для прудов и бассейнов.",["Лопастные аэраторы","Диффузоры и воздуходувки","Кислородные конусы для УЗВ"]],
+  ["Измерения","Оксиметры и приборы контроля воды","Портативные и стационарные O₂-метры с сигнализацией.",["Портативные O₂-метры","Стационарные датчики","Датчики pH и температуры"]],
+  ["Защита","Сети от птиц","Защита прудов и бассейнов от цапель и бакланов.",["Защитные сети","Тросы и крепёж","Береговые сети"]],
+  ["Кормление","Автоматические кормушки","Кормушки с таймером и на солнечной энергии для прудов.",["Автоматические кормушки","Кормушки с таймером","Запасные части"]],
+  ["Вода","Насосы и фильтры","Для водообмена, фильтрации и УФ-обеззараживания.",["Погружные насосы","Механические фильтры","УФ-стерилизаторы"]],
+  ["Облов","Сети и подсачеки","Для отлова, сортировки и пересадки рыбы.",["Закидные неводы","Подсачеки и сита","Сортировочные столы"]]],
+ idesc:[["Поверхностная аэрация и перемешивание воды в больших прудах.","Мелкопузырчатая донная аэрация для глубоких прудов и бассейнов.","Ввод чистого кислорода в установках замкнутого водоснабжения."],
+  ["Для быстрой проверки растворённого кислорода и температуры у пруда.","Для непрерывных измерений в пруду, с сигнализацией.","Для контроля качества воды в прудах и бассейнах."],
+  ["Укрытие над прудами и бассейнами от цапель и бакланов.","Стальные тросы, натяжители, зажимы и крепления к столбам.","Береговые ограждения, чтобы цапли не заходили в пруд."],
+  ["Равномерное распределение корма по заданному графику.","Время и порции кормления задаются таймером, возможно солнечное питание.","Двигатели, разбрасывающие диски, таймеры и аккумуляторы."],
+  ["Для водообмена, спуска прудов и перекачки воды.","Барабанные и сетчатые фильтры для задержания взвешенных частиц.","УФ-C обеззараживание и борьба с водорослями в УЗВ."],
+  ["Для облова рыбы в пруду; размер подбирается под пруд.","Для пересадки, сортировки и проверки здоровья рыбы.","Для сортировки рыбы по размеру после облова."]],
+ pl:"Цена",pq:"По запросу",quoteWord:"Цена – по запросу",
+ add:"В список",addAria:"В список: ",addedT:"Добавлено в список",open:"Открыть",inList:"В списке",
+ qtyDec:"Уменьшить количество",qtyInc:"Увеличить количество",remove:"Удалить",unit:"шт.",pos:["позиция","позиции","позиций"],
+ howLab:"Процесс",howT:"Как мы работаем",howSub:"От данных пруда до предложения – три шага.",
+ steps:[["Данные","Площадь и глубина пруда, вид рыбы и электроснабжение."],["Подбор","Предлагаем аэраторы, измерительные приборы или сети под ваши задачи."],["Предложение","Отправляем предложение с ценой по электронной почте."]],
+ stepDone:"Готово",stepNext:"Далее",
+ qEyebrow:"Запрос · B2B",qTitle:"Предложение для вашего пруда",qLead:"Опишите хозяйство и пруды – по этим данным мы подберём оборудование и пришлём цену.",qLeadP:"Укажите производителя, модель и что требуется – ответим по электронной почте.",qTitleP:"Запрос на запчасть или ремонт",
+ qfHead:"Форма запроса",gNeed:"Потребность",
+ fArea:"Площадь, ha",fDepth:"Средняя глубина, m",vol:"Объём воды",fFish:"Вид рыбы",fPower:"Электричество у пруда",fNeed:"Что требуется?",
+ power:["230 V","400 V (трёхфазное)","Нет – нужно солнечное решение"],
+ modeL:"Тип запроса",mode:["Новое оборудование","Запчасть или ремонт"],
+ gFarm:"Хозяйство и контакты",reqNote:"Обязательны только поля, отмеченные *.",
+ fCo:"Компания или хозяйство",fPerson:"Контактное лицо",fPhone:"Телефон",fCountry:"Страна",country:["Литва","Германия","Другая страна"],
+ fPlace:"Место доставки",fZip:"Почтовый индекс",fCity:"Населённый пункт",fVat:"Номер плательщика НДС",
+ vatHint:"Для компании из другой страны ЕС: при указании действительного номера плательщика НДС предложение может быть без НДС (поставка внутри Сообщества).",
+ fFarm:"Тип хозяйства",farm:["Форелевое хозяйство (проточная вода)","Карповые пруды","Установка замкнутого водоснабжения (УЗВ/RAS)","Другое"],
+ gPonds:"Пруды и электричество",pondN:"Пруд",pondsW:["пруд","пруда","прудов"],pondAdd:"Добавить пруд",pondRm:"Удалить",pondRmA:"Удалить пруд ",pondAdded:"Добавлен пруд ",pondDel:"Удалён пруд ",
+ pondMax:"Указано 12 прудов – остальные пруды опишите в поле «Что требуется?».",
+ fishSel:["Не знаю","Форель","Карп","Осётр","Несколько видов или другое"],volAll:"Общий объём воды",
+ attach:"Приложите к письму план пруда или фотографии – это можно сделать в вашей почтовой программе.",
+ gPart:"Оборудование и потребность",partLead:"Проверим, сможем ли мы достать нужную деталь или предложить ремонт.",
+ fMaker:"Производитель",fModel:"Модель",fSerial:"Серийный номер",fYear:"Год выпуска",fProb:"Что сломалось или какая деталь нужна?",
+ probPh:"Напр.: не запускается двигатель, нужен новый таймер",
+ partAttach:"Приложите к письму фотографии заводской таблички и неисправной детали.",
+ partList:"Позиции из списка запроса в это письмо не включаются – отправьте их, выбрав «Новое оборудование».",
+ errCo:"Укажите название компании или хозяйства.",errMaker:"Укажите производителя.",errProb:"Опишите, что сломалось или какая деталь нужна.",errYear:"Укажите год, напр. 2019, или оставьте поле пустым.",
+ draftL:"Сохранить черновик в этом браузере",draftS:"Необязательно. Данные остаются только на этом устройстве и удаляются, если снять отметку.",
+ draftOn:"Черновик сохранён в этом браузере.",draftOff:"Черновик удалён.",draftFail:"Не удалось сохранить в этом браузере.",draftBack:"Восстановлен черновик, сохранённый в этом браузере.",
+ needPh:"Напр.: аэраторы для 2 прудов и сеть от цапель 40 × 25 m",
+ fromList:"Из списка запроса",listNone:"Список пуст – добавьте позиции из каталога или опишите потребность ниже.",edit:"Редактировать список",
+ fSubmit:"Подготовить запрос",fNote:"Форма ничего не отправляет автоматически – она готовит текст письма на адрес info@baltaqua.eu.",
+ outTitle:"Текст запроса",outPrev:"Предпросмотр",outReady:"Готово",outLive:"Текст обновляется, когда вы меняете данные формы или список.",
+ copy:"Копировать текст",copied:"Скопировано",copyFail:"Не удалось – выделите текст и скопируйте его",mail:"Открыть письмо",mailSubj:"Запрос",
+ outHead:"Запрос – отправьте этот текст по эл. почте на адрес info@baltaqua.eu",
+ outF:{no:"Номер запроса",kind:"Тип запроса",co:"Компания или хозяйство",person:"Контактное лицо",phone:"Телефон",country:"Страна",place:"Место доставки",vat:"Номер плательщика НДС",farm:"Тип хозяйства",ponds:"Пруды",area:"площадь",depth:"глубина",total:"Всего",power:"Электричество",items:"Позиции",need:"Потребность",gear:"Оборудование",maker:"Производитель",model:"Модель",serial:"Серийный номер",year:"Год выпуска",prob:"Неисправность или нужная деталь"},
+ mailSubjP:"Запчасть или ремонт",mailLongBtn:"Копировать и открыть письмо",
+ print:"Печать",printCat:"Распечатать каталог",printFail:"В этом окне печать не запустилась. Откройте страницу в отдельной вкладке и распечатайте её (Ctrl+P).",
+ ps:{doc:"Документ",date:"Дата",to:"Получатель",toCat:"Контакты",page:"Лист",ponds:["Пруд","Площадь","Глубина","Объём","Вид рыбы"],items:["№","Код","Оборудование","Параметры","Кол-во"],none:"Список пуст.",foot:"Запрос ни к чему вас не обязывает. Этот лист никуда не отправляется – отправьте запрос по эл. почте на адрес info@baltaqua.eu.",cat:"Каталог",catSub:"Оборудование для прудов и рыбоводства",types:"Типы оборудования",typesV:"18",typesS:"цены по запросу"},
+ catAsk:"Для запроса укажите:",catW:"масса (от–до)",
+ ask:"Спросить об этом оборудовании",askA:"Спросить об этом оборудовании: ",askSubj:"Вопрос",askHello:"Здравствуйте,",askAbout:"Вопрос об оборудовании",askList:"В списке запроса",askQ:"Вопрос:",
+ partsL:"Запчасти и ремонт",
+ calcBtn:"Калькулятор сети",netT:"Калькулятор защитной сети",
+ netSub:"Площадь сети, периметр и число столбов – чистая геометрия. Это ориентировочные значения: тип сети, размер ячейки и крепление согласуем в предложении.",
+ nDim:"Размеры пруда",nModes:["Длина и ширина","Только площадь"],nL:"Длина пруда",nW:"Ширина пруда",nA:"Площадь пруда",nAHint:"Рассчитывается как для квадратного пруда.",
+ nO:"Выступ за берег",nS:"Расстояние между столбами",nDefHint:"Выступ – насколько сеть выходит за берег с каждой стороны. Начальные значения (выступ 1 m, 6 m между столбами) – лишь пример; измените их под свой пруд.",
+ nResL:"Ориентировочный результат",nAreaL:"площадь сети",nSizeL:"Размеры сети",nPerL:"Периметр (длина троса по контуру)",nPostL:"Столбы по периметру",nUpTo:"расстояние до",nNone:"Укажите длину и ширину пруда.",nNoneA:"Укажите площадь пруда.",
+ nHow:"Как рассчитывается",nHowL:["Длина сети = длина пруда + 2 × выступ; ширина сети – аналогично.","Площадь сети = длина сети × ширина сети.","Периметр = 2 × (длина сети + ширина сети).","Столбы: по одному в каждом углу и равномерно по сторонам, чтобы расстояние между ними не превышало выбранного.","Если известна только площадь: длина = ширина = √площадь.","Не учтены: промежуточные опоры над большими прудами и запас троса на узлы и натяжение."],
+ nErr:"Введите число.",errMin:"Минимальное значение – ",
+ parCalc:"Ориентировочно",nNet:"сеть",nPer:"периметр",postsW:["столб","столба","столбов"],
+ errArea:"Укажите площадь пруда (не менее 0,01 ha).",errDepth:"Укажите среднюю глубину (не менее 0,3 m).",
+ ready:"Текст запроса подготовлен",dec:"Уменьшить",inc:"Увеличить",
+ contactT:"Контакты",addr:"Šilutės pl., Klaipėda, Литва",copyEmail:"Копировать адрес эл. почты",copyPhone:"Копировать номер телефона",copiedX:"Скопировано: ",
+ trustL:"Почему BaltAqua",
+ usp:[["u-spec","Подбор под ваш пруд","Предлагаем оборудование с учётом площади и глубины пруда, вида рыбы и электроснабжения."],["u-list","Один запрос","Аэрация, измерения, сети и кормление – в одном списке и одном письме."],["u-pin","Литва и Германия","Готовим предложения для рыбоводческих хозяйств в обеих странах."],["u-chat","Прямой контакт","Вопросы присылайте на <a href=\"mailto:info@baltaqua.eu\">info@baltaqua.eu</a>."]],
+ dTitle:"Список запроса",dEmpty:"Список пуст",dEmptyText:"Добавьте оборудование из каталога – количество можно будет изменить здесь.",dBrowse:"Смотреть каталог",
+ dTotal:"Всего",dUse:"Продолжить запрос",dClear:"Очистить",cleared:"Список очищен",undo:"Отменить",close:"Закрыть",liveDel:"Удалено из списка: ",
+ parHint:"Все поля необязательны. Если чего-то не знаете, оставьте «Не знаю» – уточним в предложении.",unk:"Не знаю – подберите",unkPh:"Не знаю",
+ qty:"Количество",cfgAdd:"Добавить в список",cfgSave:"Сохранить",cancel:"Отмена",
+ parBtn:"Параметры",parAria:"Параметры: ",varBtn:"Другой вариант",varAria:"Добавить другой вариант: ",variants:["вариант","варианта","вариантов"],vsumAria:"Открыть список запроса: ",
+ parNone:"параметры не указаны",parSet:"Указать параметры",parEdit:"Изменить параметры",parSetAria:"Указать параметры: ",parEditAria:"Изменить параметры: ",parSaved:"Параметры сохранены: ",
+ errNum:"Введите число (напр. 1,5) или оставьте поле пустым.",errInt:"Введите целое число или оставьте поле пустым.",errMax:"Максимальное значение – ",
+ nb:"Запрос ни к чему вас не обязывает.",
+ listFull:"В списке уже 60 строк – больше добавить нельзя. Остальное оборудование опишите в поле формы «Что требуется?».",
+ parCalcSq:"Ориентировочно, как для квадратного пруда",phArea:"напр. 1,5",phDepth:"напр. 1,8",
+ mailLong:"Запрос слишком длинный для ссылки на письмо. При нажатии «Копировать и открыть письмо» весь текст будет скопирован и откроется письмо на адрес info@baltaqua.eu – вставьте в него текст (Ctrl+V).",
+ mailShort:"Вставьте сюда скопированный текст запроса.",mailCopied:"Текст скопирован – вставьте его в письмо.",
+ privL:"Конфиденциальность",privLab:"Этот сайт",privT:"Конфиденциальность",
+ pv1:"Список запроса с указанными вами параметрами, а также выбор языка и оформления хранятся только в локальном хранилище этого браузера (localStorage). Поля формы сохраняются, только если вы сами отметите «Сохранить черновик в этом браузере».",
+ pv2:"Запрос доходит до нас, только когда вы сами отправляете его письмом из своей почтовой программы. Сам сайт данные не передаёт.",
+ pv3:"Сайт не использует средства аналитики, рекламы или отслеживания и ничего не загружает с серверов сторонних компаний. Шрифты встроены в страницу.",
+ pv4:"Вопросы о данных:",pvClr:"Удалить сохранённые данные",pvDone:"Данные, сохранённые в этом браузере, удалены.",ok:"Хорошо",
+ fAbout:"Оборудование для рыбоводства и прудов для Литвы и Германии. Цены – по запросу.",colCat:"Каталог",colInfo:"Информация",
+ legal:"MB «Baltgate» · код предприятия 308175773 · Šilutės pl., Klaipėda, Литва",
+ impL:"Реквизиты",impLab:"Продавец",impT:"Реквизиты",impRows:[["Компания","MB «Baltgate» (малое товарищество по праву Литвы, «mažoji bendrija»)"],["Код предприятия","308175773"],["Регистр","Регистр юридических лиц, ГП «Центр регистров» (Литва)"],["Адрес","Šilutės pl., Klaipėda, Литва"],["Эл. почта","@mail"]],
+ b2b:"Предложения предоставляем только бизнес-клиентам – компаниям и хозяйствам."},
+pl:{title:"BaltAqua – sprzęt do stawów i hodowli ryb",
+ metaDesc:"BaltAqua – aeratory, tlenomierze, siatki ochronne, karmniki, pompy i sprzęt do odłowu dla gospodarstw pstrągowych i karpiowych na Litwie i w Niemczech. Ceny na zapytanie.",
+ u1:"Dla gospodarstw na Litwie i w Niemczech",u1s:"Dla gospodarstw · LT · DE",u2:"Oferta na podstawie danych stawu",u3:"Zapytanie niezobowiązujące",
+ n4f:"Sprzęt wędkarski – BalticBite",tagline:"Sprzęt do stawów",
+ n1:"Katalog",n2:"Jak pracujemy",n3:"Zapytanie",navAria:"Nawigacja główna",skip:"Przejdź do treści",
+ listBtn:"Lista zapytania",listAria:"Lista zapytania",
+ cta:"Poproś o ofertę",cta2:"Zobacz katalog",
+ eyebrow:"Sprzęt dla gospodarstw pstrągowych i karpiowych",heroT:["Tlen, ochrona","i karmienie –","w jednym miejscu"],
+ text:"Aeratory, tlenomierze i siatki ochronne przed czaplami i kormoranami. Dobieramy je do powierzchni i głębokości stawu oraz gatunku ryb.",
+ spec:[["6","kategorii sprzętu"],["18","typów sprzętu z parametrami"],["LT · DE","dla gospodarstw w obu krajach"],["230/400 V","lub rozwiązanie solarne"]],
+ annoK:"Schemat · staw T-1",annoD:"Głębokość, m",
+ secT:"Przekrój A–A",secSub:"Gdzie w stawie pracuje każda grupa sprzętu – kliknij, aby przejść do katalogu.",secWL:"lustro wody",
+ secAria:"Schemat przekroju stawu: aerator na powierzchni wody, dyfuzor na dnie, sonda tlenowa, siatka ochronna nad stawem, karmnik na grobli, pompa i niewód; głębokość do 1,8 m.",
+ solEyebrow:"Katalog · do stawów i basenów",solTitle:"Co dostarczamy",solLead:"Wybierz pozycje i podaj to, co wiesz – dokładny model dobierzemy w ofercie.",
+ solHint:"Dodawaj konkretne pozycje do listy zapytania – ilości zmienisz na liście.",catsL:"Kategorie",
+ sol:[["Napowietrzanie","Aeratory i dostarczanie tlenu","Aeratory powierzchniowe, łopatkowe i denne do stawów i basenów.",["Aeratory łopatkowe","Dyfuzory i dmuchawy","Stożki tlenowe do RAS"]],
+  ["Pomiary","Tlenomierze i mierniki wody","Przenośne i stacjonarne mierniki O₂ z alarmem.",["Przenośne mierniki O₂","Sondy stacjonarne","Czujniki pH i temperatury"]],
+  ["Ochrona","Siatki przed ptakami","Ochrona stawów i basenów przed czaplami i kormoranami.",["Siatki ochronne","Liny i mocowania","Siatki brzegowe"]],
+  ["Karmienie","Karmniki automatyczne","Karmniki z timerem i zasilaniem solarnym do stawów.",["Karmniki automatyczne","Karmniki z timerem","Części zamienne"]],
+  ["Woda","Pompy i filtry","Do wymiany wody, filtracji i dezynfekcji UV.",["Pompy zatapialne","Filtry mechaniczne","Lampy UV"]],
+  ["Odłów","Sieci i podbieraki","Do odłowu, sortowania i przenoszenia ryb.",["Niewody","Podbieraki i sita","Stoły sortownicze"]]],
+ idesc:[["Napowietrzanie powierzchniowe i ruch wody w dużych stawach.","Drobnopęcherzykowe napowietrzanie denne do głębokich stawów i basenów.","Wprowadzanie czystego tlenu w zamkniętych systemach recyrkulacyjnych."],
+  ["Do szybkiego sprawdzenia tlenu rozpuszczonego i temperatury przy stawie.","Do ciągłego pomiaru w stawie, z alarmem.","Do kontroli jakości wody w stawach i basenach."],
+  ["Przykrycie stawów i basenów chroniące przed czaplami i kormoranami.","Liny stalowe, napinacze, zaciski i mocowania słupków.","Zapory brzegowe, aby czaple nie wchodziły do stawu."],
+  ["Równomierne rozrzucanie paszy według ustalonego harmonogramu.","Czas i porcje karmienia ustawiane timerem, możliwe zasilanie solarne.","Silniki, tarcze rozrzucające, timery i akumulatory."],
+  ["Do wymiany wody, spuszczania stawów i przepompowywania.","Filtry bębnowe i sitowe do zatrzymywania zawiesiny.","Dezynfekcja UV-C i kontrola glonów w systemach recyrkulacyjnych."],
+  ["Do odłowu ryb w stawie; rozmiar dobierany do stawu.","Do przenoszenia, sortowania i kontroli zdrowia ryb.","Do sortowania ryb według wielkości po odłowie."]],
+ pl:"Cena",pq:"Na zapytanie",quoteWord:"Cena na zapytanie",
+ add:"Do listy",addAria:"Do listy: ",addedT:"Dodano do listy",open:"Otwórz",inList:"Na liście",
+ qtyDec:"Zmniejsz ilość",qtyInc:"Zwiększ ilość",remove:"Usuń",unit:"szt.",pos:["pozycja","pozycje","pozycji"],
+ howLab:"Proces",howT:"Jak pracujemy",howSub:"Od danych stawu do oferty – w trzech krokach.",
+ steps:[["Dane","Powierzchnia i głębokość stawu, gatunek ryb i dostęp do prądu."],["Dobór","Proponujemy aeratory, mierniki lub siatki zgodnie z potrzebami."],["Oferta","Ofertę z ceną wysyłamy e-mailem."]],
+ stepDone:"Gotowe",stepNext:"Dalej",
+ qEyebrow:"Zapytanie · B2B",qTitle:"Oferta dla Twojego stawu",qLead:"Opisz gospodarstwo i stawy – na tej podstawie dobierzemy sprzęt i prześlemy cenę.",qLeadP:"Podaj producenta, model i czego potrzebujesz – odpowiemy e-mailem.",qTitleP:"Zapytanie o część lub naprawę",
+ qfHead:"Formularz zapytania",gNeed:"Zapotrzebowanie",
+ fArea:"Powierzchnia, ha",fDepth:"Średnia głębokość, m",vol:"Objętość wody",fFish:"Gatunek ryb",fPower:"Prąd przy stawie",fNeed:"Czego potrzebujesz?",
+ power:["230 V","400 V (trójfazowe)","Brak – potrzebne rozwiązanie solarne"],
+ modeL:"Rodzaj zapytania",mode:["Nowy sprzęt","Część zamienna lub naprawa"],
+ gFarm:"Gospodarstwo i kontakt",reqNote:"Wymagane są tylko pola oznaczone *.",
+ fCo:"Firma lub gospodarstwo",fPerson:"Osoba kontaktowa",fPhone:"Telefon",fCountry:"Kraj",country:["Litwa","Niemcy","Inny kraj"],
+ fPlace:"Miejsce dostawy",fZip:"Kod pocztowy",fCity:"Miejscowość",fVat:"Numer VAT UE",
+ vatHint:"Dla firmy z innego kraju UE: po podaniu ważnego numeru VAT UE oferta może być bez VAT (wewnątrzwspólnotowa dostawa towarów).",
+ fFarm:"Rodzaj gospodarstwa",farm:["Gospodarstwo pstrągowe (woda przepływowa)","Stawy karpiowe","System recyrkulacyjny (RAS)","Inne"],
+ gPonds:"Stawy i prąd",pondN:"Staw",pondsW:["staw","stawy","stawów"],pondAdd:"Dodaj staw",pondRm:"Usuń",pondRmA:"Usuń staw ",pondAdded:"Dodano staw ",pondDel:"Usunięto staw ",
+ pondMax:"Wpisano 12 stawów – pozostałe stawy opisz w polu „Czego potrzebujesz?”.",
+ fishSel:["Nie wiem","Pstrągi","Karpie","Jesiotry","Kilka gatunków lub inne"],volAll:"Łączna objętość wody",
+ attach:"Dołącz do wiadomości plan stawu lub zdjęcia – zrobisz to w swoim programie pocztowym.",
+ gPart:"Sprzęt i zapotrzebowanie",partLead:"Sprawdzimy, czy możemy pozyskać potrzebną część lub zaproponować naprawę.",
+ fMaker:"Producent",fModel:"Model",fSerial:"Numer seryjny",fYear:"Rok produkcji",fProb:"Co się zepsuło lub jakiej części potrzebujesz?",
+ probPh:"Np.: silnik się nie włącza, potrzebny nowy timer",
+ partAttach:"Dołącz do wiadomości zdjęcia tabliczki znamionowej i uszkodzonej części.",
+ partList:"Pozycje z listy zapytania nie są dołączane do tej wiadomości – wyślij je, wybierając „Nowy sprzęt”.",
+ errCo:"Wpisz nazwę firmy lub gospodarstwa.",errMaker:"Wpisz producenta.",errProb:"Opisz, co się zepsuło lub jakiej części potrzebujesz.",errYear:"Wpisz rok, np. 2019, lub pozostaw pole puste.",
+ draftL:"Zapisz wersję roboczą w tej przeglądarce",draftS:"Opcjonalnie. Dane pozostają tylko na tym urządzeniu, a po odznaczeniu są usuwane.",
+ draftOn:"Wersja robocza zapisana w tej przeglądarce.",draftOff:"Wersja robocza usunięta.",draftFail:"Nie udało się zapisać w tej przeglądarce.",draftBack:"Przywrócono wersję roboczą zapisaną w tej przeglądarce.",
+ needPh:"Np.: aeratory do 2 stawów i siatka przed czaplami 40 × 25 m",
+ fromList:"Z listy zapytania",listNone:"Lista jest pusta – dodaj pozycje z katalogu lub opisz zapotrzebowanie poniżej.",edit:"Edytuj listę",
+ fSubmit:"Przygotuj zapytanie",fNote:"Formularz niczego nie wysyła automatycznie – przygotowuje treść e-maila na adres info@baltaqua.eu.",
+ outTitle:"Treść zapytania",outPrev:"Podgląd",outReady:"Gotowe",outLive:"Treść aktualizuje się, gdy zmieniasz dane formularza lub listę.",
+ copy:"Kopiuj tekst",copied:"Skopiowano",copyFail:"Nie udało się – zaznacz tekst i skopiuj go",mail:"Otwórz e-mail",mailSubj:"Zapytanie",
+ outHead:"Zapytanie – wyślij ten tekst e-mailem na adres info@baltaqua.eu",
+ outF:{no:"Zapytanie nr",kind:"Rodzaj zapytania",co:"Firma lub gospodarstwo",person:"Osoba kontaktowa",phone:"Telefon",country:"Kraj",place:"Miejsce dostawy",vat:"Numer VAT UE",farm:"Rodzaj gospodarstwa",ponds:"Stawy",area:"powierzchnia",depth:"głębokość",total:"Razem",power:"Prąd",items:"Pozycje",need:"Zapotrzebowanie",gear:"Sprzęt",maker:"Producent",model:"Model",serial:"Numer seryjny",year:"Rok produkcji",prob:"Usterka lub potrzebna część"},
+ mailSubjP:"Część zamienna lub naprawa",mailLongBtn:"Kopiuj i otwórz e-mail",
+ print:"Drukuj",printCat:"Drukuj katalog",printFail:"Nie udało się rozpocząć drukowania w tym oknie. Otwórz stronę w osobnej karcie i wydrukuj ją tam (Ctrl+P).",
+ ps:{doc:"Dokument",date:"Data",to:"Odbiorca",toCat:"Kontakt",page:"Strona",ponds:["Staw","Powierzchnia","Głębokość","Objętość","Gatunek ryb"],items:["Lp.","Kod","Sprzęt","Parametry","Ilość"],none:"Lista jest pusta.",foot:"Zapytanie do niczego nie zobowiązuje. Ten arkusz nie jest nigdzie wysyłany – wyślij zapytanie e-mailem na adres info@baltaqua.eu.",cat:"Katalog",catSub:"Sprzęt do stawów i hodowli ryb",types:"Typy sprzętu",typesV:"18",typesS:"ceny na zapytanie"},
+ catAsk:"W zapytaniu podaj:",catW:"masa (od–do)",
+ ask:"Zapytaj o ten sprzęt",askA:"Zapytaj o ten sprzęt: ",askSubj:"Pytanie",askHello:"Dzień dobry,",askAbout:"Pytanie o sprzęt",askList:"Na liście zapytania",askQ:"Pytanie:",
+ partsL:"Części zamienne i naprawy",
+ calcBtn:"Kalkulator siatki",netT:"Kalkulator siatki ochronnej",
+ netSub:"Powierzchnia siatki, obwód i liczba słupków – czysta geometria. To wartości orientacyjne: rodzaj siatki, wielkość oczka i mocowanie uzgodnimy w ofercie.",
+ nDim:"Wymiary stawu",nModes:["Długość i szerokość","Tylko powierzchnia"],nL:"Długość stawu",nW:"Szerokość stawu",nA:"Powierzchnia stawu",nAHint:"Obliczane jak dla stawu kwadratowego.",
+ nO:"Zakład poza brzeg",nS:"Rozstaw słupków",nDefHint:"Zakład – o ile siatka wychodzi poza brzeg z każdej strony. Wartości początkowe (zakład 1 m, 6 m między słupkami) to tylko przykład; dostosuj je do swojego stawu.",
+ nResL:"Wynik orientacyjny",nAreaL:"powierzchnia siatki",nSizeL:"Wymiary siatki",nPerL:"Obwód (długość liny dookoła)",nPostL:"Słupki na obwodzie",nUpTo:"rozstaw do",nNone:"Wpisz długość i szerokość stawu.",nNoneA:"Wpisz powierzchnię stawu.",
+ nHow:"Jak obliczamy",nHowL:["Długość siatki = długość stawu + 2 × zakład; szerokość siatki – analogicznie.","Powierzchnia siatki = długość siatki × szerokość siatki.","Obwód = 2 × (długość siatki + szerokość siatki).","Słupki: po jednym w każdym narożniku i równomiernie wzdłuż boków, tak aby rozstaw nie przekraczał wybranej wartości.","Gdy znana jest tylko powierzchnia: długość = szerokość = √powierzchnia.","Nie uwzględniono: podpór pośrednich nad dużymi stawami ani zapasu liny na węzły i naciąg."],
+ nErr:"Wpisz liczbę.",errMin:"Wartość minimalna: ",
+ parCalc:"Orientacyjnie",nNet:"siatka",nPer:"obwód",postsW:["słupek","słupki","słupków"],
+ errArea:"Wpisz powierzchnię stawu (co najmniej 0,01 ha).",errDepth:"Wpisz średnią głębokość (co najmniej 0,3 m).",
+ ready:"Treść zapytania przygotowana",dec:"Zmniejsz",inc:"Zwiększ",
+ contactT:"Kontakt",addr:"Šilutės pl., Klaipėda, Litwa",copyEmail:"Kopiuj adres e-mail",copyPhone:"Kopiuj numer telefonu",copiedX:"Skopiowano: ",
+ trustL:"Dlaczego BaltAqua",
+ usp:[["u-spec","Dobór do stawu","Proponujemy sprzęt na podstawie powierzchni i głębokości stawu, gatunku ryb i dostępu do prądu."],["u-list","Jedno zapytanie","Napowietrzanie, pomiary, siatki i karmienie – na jednej liście i w jednym e-mailu."],["u-pin","Litwa i Niemcy","Przygotowujemy oferty dla gospodarstw rybackich w obu krajach."],["u-chat","Bezpośredni kontakt","Pytania wysyłaj na adres <a href=\"mailto:info@baltaqua.eu\">info@baltaqua.eu</a>."]],
+ dTitle:"Lista zapytania",dEmpty:"Lista jest pusta",dEmptyText:"Dodaj sprzęt z katalogu – ilości zmienisz tutaj.",dBrowse:"Zobacz katalog",
+ dTotal:"Razem",dUse:"Kontynuuj zapytanie",dClear:"Wyczyść",cleared:"Lista wyczyszczona",undo:"Cofnij",close:"Zamknij",liveDel:"Usunięto z listy: ",
+ parHint:"Wszystkie pola są opcjonalne. Czego nie wiesz, zostaw jako „Nie wiem” – uzgodnimy to w ofercie.",unk:"Nie wiem – proszę dobrać",unkPh:"Nie wiem",
+ qty:"Ilość",cfgAdd:"Dodaj do listy",cfgSave:"Zapisz",cancel:"Anuluj",
+ parBtn:"Parametry",parAria:"Parametry: ",varBtn:"Inny wariant",varAria:"Dodaj inny wariant: ",variants:["wariant","warianty","wariantów"],vsumAria:"Otwórz listę zapytania: ",
+ parNone:"bez podanych parametrów",parSet:"Podaj parametry",parEdit:"Zmień parametry",parSetAria:"Podaj parametry: ",parEditAria:"Zmień parametry: ",parSaved:"Zapisano parametry: ",
+ errNum:"Wpisz liczbę (np. 1,5) lub pozostaw pole puste.",errInt:"Wpisz liczbę całkowitą lub pozostaw pole puste.",errMax:"Wartość maksymalna: ",
+ nb:"Zapytanie do niczego nie zobowiązuje.",
+ listFull:"Lista ma już 60 wierszy – nie można dodać więcej. Pozostały sprzęt opisz w polu formularza „Czego potrzebujesz?”.",
+ parCalcSq:"Orientacyjnie, jak dla stawu kwadratowego",phArea:"np. 1,5",phDepth:"np. 1,8",
+ mailLong:"Zapytanie jest za długie na link e-mail. Po kliknięciu „Kopiuj i otwórz e-mail” cały tekst zostanie skopiowany i otworzy się wiadomość na adres info@baltaqua.eu – wklej do niej tekst (Ctrl+V).",
+ mailShort:"Wklej tutaj skopiowaną treść zapytania.",mailCopied:"Tekst skopiowany – wklej go do wiadomości.",
+ privL:"Prywatność",privLab:"Ta strona",privT:"Prywatność",
+ pv1:"Lista zapytania z podanymi parametrami oraz wybór języka i wyglądu są przechowywane wyłącznie w pamięci lokalnej tej przeglądarki (localStorage). Pola formularza są zapisywane tylko wtedy, gdy sam zaznaczysz „Zapisz wersję roboczą w tej przeglądarce”.",
+ pv2:"Zapytanie dociera do nas dopiero wtedy, gdy sam wyślesz je e-mailem ze swojego programu pocztowego. Sama strona nie przesyła żadnych danych.",
+ pv3:"Ta strona nie korzysta z narzędzi analitycznych, reklamowych ani śledzących i niczego nie pobiera z serwerów innych firm. Czcionki są osadzone w stronie.",
+ pv4:"Pytania dotyczące danych:",pvClr:"Usuń zapisane dane",pvDone:"Dane zapisane w tej przeglądarce zostały usunięte.",ok:"OK",
+ fAbout:"Sprzęt do hodowli ryb i stawów dla Litwy i Niemiec. Ceny na zapytanie.",colCat:"Katalog",colInfo:"Informacje",
+ legal:"MB „Baltgate” · kod firmy 308175773 · Šilutės pl., Klaipėda, Litwa",
+ impL:"Dane firmy",impLab:"Sprzedawca",impT:"Dane firmy",impRows:[["Firma","MB „Baltgate” (mała spółka osobowa według prawa litewskiego, „mažoji bendrija”)"],["Kod firmy","308175773"],["Rejestr","Rejestr Osób Prawnych, Państwowe Przedsiębiorstwo Centrum Rejestrów (Litwa)"],["Adres","Šilutės pl., Klaipėda, Litwa"],["E-mail","@mail"]],
+ b2b:"Oferty przygotowujemy wyłącznie dla klientów biznesowych – firm i gospodarstw."}
 };
 
 /* ---------- state ---------- */
@@ -1889,17 +2210,20 @@ let lang="lt",outShown=false,tried=false,lastFocus=null,restoreFocus=true,cart=[
 /* research-fix: pond T-1 starts empty (the example values are placeholders), every request type keeps its own number */
 let mode="new",ponds=[{a:"",d:"",f:0}],reqNo="",draftOn=false,dTimer=0,netS=null,printing=null;
 const reqNos={new:"",parts:""};
-try{const s=localStorage.getItem("ba-lang");if(s==="de"||s==="lt")lang=s}catch(e){}
+const LANGS=["lt","de","en","ru","pl"];
+try{const s=localStorage.getItem("ba-lang");if(LANGS.includes(s))lang=s}catch(e){}
 const KEY=/^[0-5]-[0-2]$/,MAXL=60,MAILMAX=1900,MAXP=12,DRAFT="ba-draft";
 /* first choice of the chip groups (a saved draft overrides it): country from the language the page opens in, no farm
    type, power "Nežinau" (option 0 – left out of the e-mail) */
-const initR={country:lang==="de"?1:0,farm:-1,power:0};
+/* EN / RU / PL behave like the international version: country "Other country" (DE keeps Germany, LT Lithuania) */
+const initR={country:lang==="de"?1:lang==="lt"?0:2,farm:-1,power:0};
 const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));
-const D=()=>T[lang];
+const D=()=>T[lang]||T.lt;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 /* reduced motion: the OS setting, or the look panel's own choice (data-motion on <html>) */
 const reduce=()=>document.documentElement.getAttribute("data-motion")==="reduce"||!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-const loc=()=>lang==="de"?"de-DE":"lt-LT";
+const LOC={lt:"lt-LT",de:"de-DE",en:"en-GB",ru:"ru-RU",pl:"pl-PL"};
+const loc=()=>LOC[lang]||"lt-LT";
 function fmt(n,max,min){try{return Number(n).toLocaleString(loc(),{minimumFractionDigits:min||0,maximumFractionDigits:max})}catch(e){return String(n)}}
 /* a number written back into a field: decimal comma, no grouping, up to max decimals (2 unless given) */
 function fmtIn(n,max){try{return Number(n).toLocaleString(loc(),{maximumFractionDigits:max==null?2:max,useGrouping:false})}catch(e){return String(n).replace(".",",")}}
@@ -1909,11 +2233,17 @@ function fmtIn(n,max){try{return Number(n).toLocaleString(loc(),{maximumFraction
 function num(v){
   let s=String(v).trim().replace(/\s+/g,"");
   if(lang==="de"&&/^[1-9]\d{0,2}(\.\d{3})+(,\d+)?$/.test(s))s=s.replace(/\./g,"");
+  /* English writes thousands with commas: "1,500" / "12,345.5" are thousands there, "1,5" stays a decimal comma */
+  if(lang==="en"&&/^[1-9]\d{0,2}(,\d{3})+(\.\d+)?$/.test(s))s=s.replace(/,/g,"");
   s=s.replace(",",".");
   return /^(\d+\.?\d*|\.\d+)$/.test(s)?parseFloat(s):NaN;
 }
 const nbsp=s=>String(s).replace(/ /g," ");
-function pl(n,p){if(lang==="de")return n===1?p[0]:p[1];const a=n%10,b=n%100;if(a===1&&b!==11)return p[0];if(a>=2&&a<=9&&(b<12||b>19))return p[1];return p[2]}
+/* plural forms: DE / EN [one, other]; LT, RU, PL [one, few, many] with each language's own rule */
+function pl(n,p){if(p.length<3||lang==="de"||lang==="en")return n===1?p[0]:p[1];const a=n%10,b=n%100;
+  if(lang==="ru"){if(a===1&&b!==11)return p[0];if(a>=2&&a<=4&&(b<12||b>14))return p[1];return p[2]}
+  if(lang==="pl"){if(n===1)return p[0];if(a>=2&&a<=4&&(b<12||b>14))return p[1];return p[2]}
+  if(a===1&&b!==11)return p[0];if(a>=2&&a<=9&&(b<12||b>19))return p[1];return p[2]}
 function plural(n){return pl(n,D().pos)}
 const cnt=n=>n+" "+plural(n);
 const nn=i=>String(i+1).padStart(2,"0");
@@ -1923,41 +2253,41 @@ const itemName=k=>{const p=k.split("-").map(Number);return D().sol[p[0]][3][p[1]
    t: c = chips (stored as option number 1..n), n = number (> 0 – or ≥ 0 with z, ≥ min, ≤ max, 2 decimals), i = whole
    number, s = short text (≤ 60) */
 const PF={
- area:{t:"n",u:"ha",max:1000,lt:["Tvenkinio plotas","Plotas"],de:["Teichfläche","Fläche"]},
- depth:{t:"n",u:"m",max:30,lt:["Vidutinis gylis","Gylis"],de:["Mittlere Tiefe","Tiefe"]},
- len:{t:"n",u:"m",max:2000,lt:["Tvenkinio ilgis","Ilgis"],de:["Teichlänge","Länge"]},
- wid:{t:"n",u:"m",max:2000,lt:["Tvenkinio plotis","Plotis"],de:["Teichbreite","Breite"]},
+ area:{t:"n",u:"ha",max:1000,lt:["Tvenkinio plotas","Plotas"],de:["Teichfläche","Fläche"],en:["Pond area","Area"],ru:["Площадь пруда","Площадь"],pl:["Powierzchnia stawu","Powierzchnia"]},
+ depth:{t:"n",u:"m",max:30,lt:["Vidutinis gylis","Gylis"],de:["Mittlere Tiefe","Tiefe"],en:["Average depth","Depth"],ru:["Средняя глубина","Глубина"],pl:["Średnia głębokość","Głębokość"]},
+ len:{t:"n",u:"m",max:2000,lt:["Tvenkinio ilgis","Ilgis"],de:["Teichlänge","Länge"],en:["Pond length","Length"],ru:["Длина пруда","Длина"],pl:["Długość stawu","Długość"]},
+ wid:{t:"n",u:"m",max:2000,lt:["Tvenkinio plotis","Plotis"],de:["Teichbreite","Breite"],en:["Pond width","Width"],ru:["Ширина пруда","Ширина"],pl:["Szerokość stawu","Szerokość"]},
  /* a net for a pond whose sides are not known: its area alone (the net calculator's "Tik plotas"); own row in the sheet */
- narea:{t:"n",u:"m²",max:4000000,solo:1,lt:["Arba tik tvenkinio plotas","Tvenkinio plotas"],de:["Oder nur die Teichfläche","Teichfläche"]},
- over:{t:"n",u:"m",max:50,z:1,lt:["Užlaida už kranto","Užlaida"],de:["Überstand je Seite","Überstand"]},
- pspace:{t:"n",u:"m",max:100,min:1,lt:["Atstumas tarp stulpų","Stulpų atstumas"],de:["Pfostenabstand","Pfostenabstand"]},
- rope:{t:"n",u:"m",max:20000,lt:["Bendras trosų ilgis","Trosai"],de:["Seillänge gesamt","Seillänge"]},
- npost:{t:"i",max:9999,lt:["Stulpų skaičius","Stulpai"],de:["Anzahl Pfosten","Pfosten"]},
- shore:{t:"n",u:"m",max:20000,lt:["Saugomo kranto ilgis","Krantas"],de:["Zu schützende Uferlänge","Uferlänge"]},
- ponds:{t:"i",max:999,lt:["Tvenkinių ar baseinų skaičius","Tvenkiniai"],de:["Anzahl Teiche oder Becken","Teiche"]},
- flow:{t:"n",u:"m³/h",max:100000,lt:["Vandens srautas","Srautas"],de:["Durchfluss","Durchfluss"]},
- qflow:{t:"n",u:"m³/h",max:100000,lt:["Reikalingas našumas","Našumas"],de:["Benötigte Fördermenge","Fördermenge"]},
- head:{t:"n",u:"m",max:300,lt:["Pakėlimo aukštis","Pakėlimas"],de:["Förderhöhe","Förderhöhe"]},
- cap:{t:"n",u:"kg",max:10000,lt:["Pašaro talpa","Talpa"],de:["Fassungsvermögen","Fassungsvermögen"]},
- gmin:{t:"n",u:"g",max:50000,lt:["Žuvų svoris nuo","Svoris nuo"],de:["Fischgewicht von","Gewicht von"]},
- gmax:{t:"n",u:"g",max:50000,lt:["Žuvų svoris iki","Svoris iki"],de:["Fischgewicht bis","Gewicht bis"]},
- maker:{t:"s",lt:["Gamintojas","Gamintojas"],de:["Hersteller","Hersteller"]},
- model:{t:"s",lt:["Modelis","Modelis"],de:["Modell","Modell"]},
- part:{t:"s",lt:["Reikalinga detalė","Detalė"],de:["Benötigtes Teil","Teil"]},
- fish:{t:"c",lt:["Žuvų rūšis","Žuvys",["Upėtakiai","Karpiai","Eršketai","Kelios rūšys ar kita"]],de:["Fischart","Fischart",["Forellen","Karpfen","Störe","Mehrere Arten oder andere"]]},
- pow:{t:"c",lt:["Elektra prie tvenkinio","Elektra",["230\u00a0V","400\u00a0V (trifazė)","Nėra – reikia saulės sprendimo"]],de:["Strom am Teich","Strom",["230\u00a0V","400\u00a0V (Drehstrom)","Keiner – Solarlösung nötig"]]},
- pow3:{t:"c",lt:["Elektros maitinimas","Elektra",["230\u00a0V","12\u00a0V akumuliatorius","Saulės energija"]],de:["Stromversorgung","Strom",["230\u00a0V","12-V-Akku","Solar"]]},
- o2:{t:"c",lt:["Deguonies šaltinis","Deguonis",["Deguonies generatorius","Skystas deguonis","Balionai"]],de:["Sauerstoffquelle","Sauerstoff",["Sauerstoffgenerator","Flüssigsauerstoff","Gasflaschen"]]},
- online:{t:"c",lt:["Rodmenys","Rodmenys",["Tik prietaise","Ir internetu (telefone, kompiuteryje)"]],de:["Messwerte","Messwerte",["Nur am Gerät","Auch online (Handy, PC)"]]},
- log:{t:"c",lt:["Matavimų išsaugojimas","Išsaugojimas",["Reikia","Nereikia"]],de:["Messwertspeicher","Speicher",["Ja","Nein"]]},
- alarm:{t:"c",lt:["Signalas, kai deguonies per mažai","Signalas",["SMS","Sirena ir šviesa","Aeratoriaus įjungimas"]],de:["Alarm bei Sauerstoffmangel","Alarm",["SMS","Sirene und Licht","Belüfter einschalten"]]},
- meas:{t:"c",lt:["Matuojama","Matuojami dydžiai",["pH","Temperatūra","pH ir temperatūra"]],de:["Messgröße","Messgröße",["pH","Temperatur","pH und Temperatur"]]},
- kind:{t:"c",lt:["Tipas","Tipas",["Nešiojamas","Stacionarus"]],de:["Ausführung","Ausführung",["Tragbar","Stationär"]]},
- bird:{t:"c",lt:["Nuo kokių paukščių saugoti","Paukščiai",["Garniai","Kormoranai","Garniai ir kormoranai"]],de:["Schutz gegen","Vögel",["Reiher","Kormorane","Reiher und Kormorane"]]},
- posts:{t:"c",lt:["Stulpai ar atramos","Stulpai",["Jau yra","Reikia"]],de:["Pfosten oder Stützen","Pfosten",["Vorhanden","Benötigt"]]},
- feed:{t:"c",lt:["Pašaras","Pašaras",["Granulės","Grūdai","Kita"]],de:["Futter","Futter",["Pellets","Getreide","Anderes"]]},
- sys:{t:"c",lt:["Sistema","Sistema",["Pratekamas vanduo","Recirkuliacinė (RAS)"]],de:["Anlage","Anlage",["Durchlaufanlage","Kreislaufanlage (RAS)"]]},
- size:{t:"c",lt:["Žuvų dydis","Dydis",["Mailius","Prekinės žuvys","Stambios (veislinės)"]],de:["Fischgröße","Größe",["Brut","Speisefische","Groß (Laichfische)"]]}
+ narea:{t:"n",u:"m²",max:4000000,solo:1,lt:["Arba tik tvenkinio plotas","Tvenkinio plotas"],de:["Oder nur die Teichfläche","Teichfläche"],en:["Or pond area only","Pond area"],ru:["Или только площадь пруда","Площадь пруда"],pl:["Lub tylko powierzchnia stawu","Powierzchnia stawu"]},
+ over:{t:"n",u:"m",max:50,z:1,lt:["Užlaida už kranto","Užlaida"],de:["Überstand je Seite","Überstand"],en:["Overhang beyond the bank","Overhang"],ru:["Выступ за берег","Выступ"],pl:["Zakład poza brzeg","Zakład"]},
+ pspace:{t:"n",u:"m",max:100,min:1,lt:["Atstumas tarp stulpų","Stulpų atstumas"],de:["Pfostenabstand","Pfostenabstand"],en:["Post spacing","Post spacing"],ru:["Расстояние между столбами","Шаг столбов"],pl:["Rozstaw słupków","Rozstaw słupków"]},
+ rope:{t:"n",u:"m",max:20000,lt:["Bendras trosų ilgis","Trosai"],de:["Seillänge gesamt","Seillänge"],en:["Total cable length","Cables"],ru:["Общая длина тросов","Тросы"],pl:["Łączna długość lin","Liny"]},
+ npost:{t:"i",max:9999,lt:["Stulpų skaičius","Stulpai"],de:["Anzahl Pfosten","Pfosten"],en:["Number of posts","Posts"],ru:["Количество столбов","Столбы"],pl:["Liczba słupków","Słupki"]},
+ shore:{t:"n",u:"m",max:20000,lt:["Saugomo kranto ilgis","Krantas"],de:["Zu schützende Uferlänge","Uferlänge"],en:["Length of bank to protect","Bank"],ru:["Длина защищаемого берега","Берег"],pl:["Długość chronionego brzegu","Brzeg"]},
+ ponds:{t:"i",max:999,lt:["Tvenkinių ar baseinų skaičius","Tvenkiniai"],de:["Anzahl Teiche oder Becken","Teiche"],en:["Number of ponds or tanks","Ponds"],ru:["Количество прудов или бассейнов","Пруды"],pl:["Liczba stawów lub basenów","Stawy"]},
+ flow:{t:"n",u:"m³/h",max:100000,lt:["Vandens srautas","Srautas"],de:["Durchfluss","Durchfluss"],en:["Water flow","Flow"],ru:["Расход воды","Расход"],pl:["Przepływ wody","Przepływ"]},
+ qflow:{t:"n",u:"m³/h",max:100000,lt:["Reikalingas našumas","Našumas"],de:["Benötigte Fördermenge","Fördermenge"],en:["Required capacity","Capacity"],ru:["Требуемая производительность","Производительность"],pl:["Wymagana wydajność","Wydajność"]},
+ head:{t:"n",u:"m",max:300,lt:["Pakėlimo aukštis","Pakėlimas"],de:["Förderhöhe","Förderhöhe"],en:["Delivery head","Head"],ru:["Высота подъёма","Напор"],pl:["Wysokość podnoszenia","Wysokość podnoszenia"]},
+ cap:{t:"n",u:"kg",max:10000,lt:["Pašaro talpa","Talpa"],de:["Fassungsvermögen","Fassungsvermögen"],en:["Feed capacity","Capacity"],ru:["Вместимость бункера","Вместимость"],pl:["Pojemność zasobnika","Pojemność"]},
+ gmin:{t:"n",u:"g",max:50000,lt:["Žuvų svoris nuo","Svoris nuo"],de:["Fischgewicht von","Gewicht von"],en:["Fish weight from","Weight from"],ru:["Масса рыбы от","Масса от"],pl:["Masa ryb od","Masa od"]},
+ gmax:{t:"n",u:"g",max:50000,lt:["Žuvų svoris iki","Svoris iki"],de:["Fischgewicht bis","Gewicht bis"],en:["Fish weight to","Weight to"],ru:["Масса рыбы до","Масса до"],pl:["Masa ryb do","Masa do"]},
+ maker:{t:"s",lt:["Gamintojas","Gamintojas"],de:["Hersteller","Hersteller"],en:["Manufacturer","Manufacturer"],ru:["Производитель","Производитель"],pl:["Producent","Producent"]},
+ model:{t:"s",lt:["Modelis","Modelis"],de:["Modell","Modell"],en:["Model","Model"],ru:["Модель","Модель"],pl:["Model","Model"]},
+ part:{t:"s",lt:["Reikalinga detalė","Detalė"],de:["Benötigtes Teil","Teil"],en:["Part required","Part"],ru:["Нужная деталь","Деталь"],pl:["Potrzebna część","Część"]},
+ fish:{t:"c",lt:["Žuvų rūšis","Žuvys",["Upėtakiai","Karpiai","Eršketai","Kelios rūšys ar kita"]],de:["Fischart","Fischart",["Forellen","Karpfen","Störe","Mehrere Arten oder andere"]],en:["Fish species","Fish",["Trout","Carp","Sturgeon","Several species or other"]],ru:["Вид рыбы","Рыба",["Форель","Карп","Осётр","Несколько видов или другое"]],pl:["Gatunek ryb","Ryby",["Pstrągi","Karpie","Jesiotry","Kilka gatunków lub inne"]]},
+ pow:{t:"c",lt:["Elektra prie tvenkinio","Elektra",["230\u00a0V","400\u00a0V (trifazė)","Nėra – reikia saulės sprendimo"]],de:["Strom am Teich","Strom",["230\u00a0V","400\u00a0V (Drehstrom)","Keiner – Solarlösung nötig"]],en:["Power at the pond","Power",["230 V","400 V (three-phase)","None – solar solution needed"]],ru:["Электричество у пруда","Электричество",["230 V","400 V (трёхфазное)","Нет – нужно солнечное решение"]],pl:["Prąd przy stawie","Prąd",["230 V","400 V (trójfazowe)","Brak – potrzebne rozwiązanie solarne"]]},
+ pow3:{t:"c",lt:["Elektros maitinimas","Elektra",["230\u00a0V","12\u00a0V akumuliatorius","Saulės energija"]],de:["Stromversorgung","Strom",["230\u00a0V","12-V-Akku","Solar"]],en:["Power supply","Power",["230 V","12 V battery","Solar power"]],ru:["Электропитание","Питание",["230 V","Аккумулятор 12 V","Солнечная энергия"]],pl:["Zasilanie","Zasilanie",["230 V","Akumulator 12 V","Energia słoneczna"]]},
+ o2:{t:"c",lt:["Deguonies šaltinis","Deguonis",["Deguonies generatorius","Skystas deguonis","Balionai"]],de:["Sauerstoffquelle","Sauerstoff",["Sauerstoffgenerator","Flüssigsauerstoff","Gasflaschen"]],en:["Oxygen source","Oxygen",["Oxygen generator","Liquid oxygen","Cylinders"]],ru:["Источник кислорода","Кислород",["Кислородный генератор","Жидкий кислород","Баллоны"]],pl:["Źródło tlenu","Tlen",["Generator tlenu","Ciekły tlen","Butle"]]},
+ online:{t:"c",lt:["Rodmenys","Rodmenys",["Tik prietaise","Ir internetu (telefone, kompiuteryje)"]],de:["Messwerte","Messwerte",["Nur am Gerät","Auch online (Handy, PC)"]],en:["Readings","Readings",["On the device only","Also online (phone,computer)"]],ru:["Показания","Показания",["Только на приборе","Также онлайн (телефон,компьютер)"]],pl:["Odczyty","Odczyty",["Tylko na urządzeniu","Także online (telefon,komputer)"]]},
+ log:{t:"c",lt:["Matavimų išsaugojimas","Išsaugojimas",["Reikia","Nereikia"]],de:["Messwertspeicher","Speicher",["Ja","Nein"]],en:["Data logging","Logging",["Required","Not required"]],ru:["Сохранение измерений","Сохранение",["Нужно","Не нужно"]],pl:["Zapis pomiarów","Zapis",["Potrzebny","Niepotrzebny"]]},
+ alarm:{t:"c",lt:["Signalas, kai deguonies per mažai","Signalas",["SMS","Sirena ir šviesa","Aeratoriaus įjungimas"]],de:["Alarm bei Sauerstoffmangel","Alarm",["SMS","Sirene und Licht","Belüfter einschalten"]],en:["Alarm when oxygen is too low","Alarm",["SMS","Siren and light","Switching on the aerator"]],ru:["Сигнал при недостатке кислорода","Сигнал",["SMS","Сирена и свет","Включение аэратора"]],pl:["Alarm przy niedoborze tlenu","Alarm",["SMS","Syrena i światło","Włączenie aeratora"]]},
+ meas:{t:"c",lt:["Matuojama","Matuojami dydžiai",["pH","Temperatūra","pH ir temperatūra"]],de:["Messgröße","Messgröße",["pH","Temperatur","pH und Temperatur"]],en:["Measured","Measured parameters",["pH","Temperature","pH and temperature"]],ru:["Измеряется","Измеряемые параметры",["pH","Температура","pH и температура"]],pl:["Pomiar","Mierzone parametry",["pH","Temperatura","pH i temperatura"]]},
+ kind:{t:"c",lt:["Tipas","Tipas",["Nešiojamas","Stacionarus"]],de:["Ausführung","Ausführung",["Tragbar","Stationär"]],en:["Type","Type",["Portable","Stationary"]],ru:["Тип","Тип",["Портативный","Стационарный"]],pl:["Typ","Typ",["Przenośny","Stacjonarny"]]},
+ bird:{t:"c",lt:["Nuo kokių paukščių saugoti","Paukščiai",["Garniai","Kormoranai","Garniai ir kormoranai"]],de:["Schutz gegen","Vögel",["Reiher","Kormorane","Reiher und Kormorane"]],en:["Birds to protect against","Birds",["Herons","Cormorants","Herons and cormorants"]],ru:["От каких птиц защищать","Птицы",["Цапли","Бакланы","Цапли и бакланы"]],pl:["Przed jakimi ptakami chronić","Ptaki",["Czaple","Kormorany","Czaple i kormorany"]]},
+ posts:{t:"c",lt:["Stulpai ar atramos","Stulpai",["Jau yra","Reikia"]],de:["Pfosten oder Stützen","Pfosten",["Vorhanden","Benötigt"]],en:["Posts or supports","Posts",["Already in place","Required"]],ru:["Столбы или опоры","Столбы",["Уже есть","Нужны"]],pl:["Słupki lub podpory","Słupki",["Już są","Potrzebne"]]},
+ feed:{t:"c",lt:["Pašaras","Pašaras",["Granulės","Grūdai","Kita"]],de:["Futter","Futter",["Pellets","Getreide","Anderes"]],en:["Feed","Feed",["Pellets","Grain","Other"]],ru:["Корм","Корм",["Гранулы","Зерно","Другое"]],pl:["Pasza","Pasza",["Granulat","Ziarno","Inna"]]},
+ sys:{t:"c",lt:["Sistema","Sistema",["Pratekamas vanduo","Recirkuliacinė (RAS)"]],de:["Anlage","Anlage",["Durchlaufanlage","Kreislaufanlage (RAS)"]],en:["System","System",["Flow-through","Recirculating (RAS)"]],ru:["Система","Система",["Проточная вода","Замкнутая (УЗВ/RAS)"]],pl:["System","System",["Woda przepływowa","Recyrkulacyjny (RAS)"]]},
+ size:{t:"c",lt:["Žuvų dydis","Dydis",["Mailius","Prekinės žuvys","Stambios (veislinės)"]],de:["Fischgröße","Größe",["Brut","Speisefische","Groß (Laichfische)"]],en:["Fish size","Size",["Fry","Market-size fish","Large (broodstock)"]],ru:["Размер рыбы","Размер",["Молодь","Товарная рыба","Крупная (производители)"]],pl:["Wielkość ryb","Wielkość",["Narybek","Ryby handlowe","Duże (tarlaki)"]]}
 };
 const SPEC={"0-0":["area","depth","fish","pow"],"0-1":["area","depth","fish","pow"],"0-2":["flow","o2","fish"],
  "1-0":["ponds","online","log"],"1-1":["ponds","online","alarm","pow3"],"1-2":["meas","kind","ponds"],
@@ -1984,7 +2314,8 @@ const fits=(k,p)=>cart.length<MAXL||cart.some(l=>l.k===k&&pkey(l.p)===pkey(p));
 const linesOf=k=>cart.filter(l=>l.k===k);
 const lineById=id=>cart.find(l=>l.id===+id);
 const unitsOf=k=>linesOf(k).reduce((a,l)=>a+l.q,0);
-function pVal(id,v){const f=PF[id];if(f.t==="c")return f[lang][2][v-1];if(f.t==="s")return v;return fmt(v,f.t==="i"?0:2)+(f.u?" "+f.u:"")}
+const pfL=f=>f[lang]||f.lt;
+function pVal(id,v){const f=PF[id];if(f.t==="c")return pfL(f)[2][v-1];if(f.t==="s")return v;return fmt(v,f.t==="i"?0:2)+(f.u?" "+f.u:"")}
 /* net geometry (the calculator and the summary of a net line): pond L × W (or only the area A, taken as a square),
    overhang o on every side, post spacing s → net Ln × Wn, its area, the perimeter, posts at the corners and evenly along
    the sides (spacing ≤ s). Pure geometry, shown as orientation values. */
@@ -2000,7 +2331,7 @@ function netText(r){const d=D(),N="\u00a0";return `${d.nNet} ${fmt(r.Ln,2)}${N}�
    something (an overhang > 0 or a post spacing was given): from length × width, or – when only the area is known – as a
    square pond, and it says so */
 function parSum(l){
-  const s=(SPEC[l.k]||[]).filter(id=>l.p[id]!=null).map(id=>`${PF[id][lang][1]}: ${pVal(id,l.p[id])}`);
+  const s=(SPEC[l.k]||[]).filter(id=>l.p[id]!=null).map(id=>`${pfL(PF[id])[1]}: ${pVal(id,l.p[id])}`);
   if(l.k==="2-0"&&(l.p.over>0||l.p.pspace)){
     const lw=l.p.len>0&&l.p.wid>0,r=lw?netCalc({m:0,L:l.p.len,W:l.p.wid,o:l.p.over,s:l.p.pspace}):netCalc({m:1,A:l.p.narea,o:l.p.over,s:l.p.pspace});
     if(r)s.push(`${lw?D().parCalc:D().parCalcSq}: ${netText(r)}`);
@@ -2217,11 +2548,12 @@ function render(){
   $$("[data-t]").forEach(el=>{const v=d[el.dataset.t];if(typeof v==="string")el.textContent=v});
   $$("[data-ta]").forEach(el=>{const v=d[el.dataset.ta];if(typeof v==="string")el.setAttribute("aria-label",v)});
   $$(".seg button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===lang)));
+  const ls=$("#langSel");if(ls)ls.value=lang;
   $("#heroT").innerHTML=d.heroT.map((l,i,a)=>`<span>${esc(l)}${i===a.length-1?'<i class="stop" aria-hidden="true">.</i>':""}</span>`).join(" ");
   $("#facts").innerHTML=d.spec.map(s=>`<div><dt>${esc(s[1])}</dt><dd>${esc(s[0])}</dd></div>`).join("");
   $("#xsLg").innerHTML=d.sol.map((s,i)=>`<li><a href="#cat-${i}" data-m="${i+1}"><b>${nn(i)}</b><span>${esc(s[0])}</span></a></li>`).join("");
   $("#annoK").textContent=d.annoK;$("#annoD").textContent=d.annoD;
-  $("#annoS").innerHTML=["0","0,5","1,0","1,5"].map(t=>`<span>${t}</span>`).join("");
+  $("#annoS").innerHTML=[0,.5,1,1.5].map(t=>`<span>${t?fmt(t,1,1):"0"}</span>`).join("");
   $("#trust").innerHTML=d.usp.map(u=>`<li>${ui(u[0])}<h3>${esc(u[1])}</h3><p>${u[2]}</p></li>`).join("");
   $("#fCats").innerHTML=d.sol.map((s,i)=>`<li><a href="#cat-${i}">${esc(s[0])}</a></li>`).join("");
   $("#legal2").textContent="© "+new Date().getFullYear()+" BaltAqua";
@@ -2259,7 +2591,7 @@ ${i===2?'<div class="ch-a">':""}<button type="button" class="in-list" data-act="
    the fish weight from–to as one item */
 function askFor(k){
   const d=D();
-  return SPEC[k].filter(id=>id!=="gmax").map(id=>{const t=id==="gmin"?d.catW:PF[id][lang][1];return lang==="lt"&&id!=="gmin"?t.charAt(0).toLocaleLowerCase("lt")+t.slice(1):t}).join(", ");
+  return SPEC[k].filter(id=>id!=="gmax").map(id=>{const t=id==="gmin"?d.catW:pfL(PF[id])[1];return lang!=="de"&&id!=="gmin"?t.charAt(0).toLocaleLowerCase(loc())+t.slice(1):t}).join(", ");
 }
 function renderSteps(){
   const d=D();
@@ -2353,7 +2685,7 @@ function renderCfg(){
   /* number fields two per row (a single one keeps the half width, a "solo" field gets a row of its own); a single text
      field takes the whole width; the "Nežinau – parinkite" chip has its own quiet chosen style (.unk) */
   const flush=()=>{if(row.length)h+=row.length>1||row.t!=="s"?`<div class="c-row">${row.join("")}</div>`:row[0];row=[]};
-  SPEC[k].forEach(id=>{const f=PF[id],L=f[lang],v=s.p[id];
+  SPEC[k].forEach(id=>{const f=PF[id],L=pfL(f),v=s.p[id];
     if(f.t==="c"){flush();h+=`<fieldset class="c-g"><legend>${esc(L[0])}</legend><div class="opts">${[d.unk].concat(L[2]).map((o,j)=>`<label class="opt${j?"":" unk"}"><input type="radio" name="cf-${id}" value="${j}"${(v||0)===j?" checked":""}><span>${esc(o)}</span></label>`).join("")}</div></fieldset>`;return}
     if(f.solo)flush();
     const val=v==null?"":f.t==="s"?v:fmtIn(v),attrs=f.t==="s"?'maxlength="60"':`inputmode="${f.t==="i"?"numeric":"decimal"}" spellcheck="false"`;
@@ -3054,11 +3386,13 @@ function drawSection(force){
 }
 
 /* ---------- events ---------- */
+function setLang(l){if(!T[l]||l===lang)return;lang=l;try{localStorage.setItem("ba-lang",lang)}catch(x){}render()}
+{const ls=$("#langSel");if(ls)ls.addEventListener("change",()=>setLang(ls.value))}
 document.addEventListener("click",e=>{
   const t=e.target.closest("button,a");if(!t)return;
   const d=D();
   if(t.matches(".seg button")){
-    if(t.dataset.lang!==lang){lang=t.dataset.lang;try{localStorage.setItem("ba-lang",lang)}catch(x){}render()}
+    setLang(t.dataset.lang);
     return;
   }
   if(t.classList.contains("ask")){t.href=askHref(t.dataset.k);return}
@@ -3201,9 +3535,63 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{setHdr();
       motion: { auto: "Normal", reduce: "Reduziert" },
       motionOs: "Auf Ihrem Gerät sind reduzierte Animationen eingestellt – sie gelten hier immer.",
       reset: "Standard wiederherstellen", done: "Fertig", resetDone: "Standarddarstellung wiederhergestellt", close: "Schließen"
+    },
+    en: {
+      title: "Appearance", note: "Your choices are saved in this browser only.",
+      noStore: "Your choices cannot be saved in this browser – they apply until you reload the page.",
+      gTheme: "Background and colours", gAccent: "Accent colour", gSize: "Text size", gDensity: "Display density", gMap: "Background pattern", gMotion: "Animations",
+      themes: {
+        light: ["White", "Clean white background (default)"], paper: ["Paper", "Warm paper tone"],
+        ice: ["Ice", "Cool bluish grey"], dune: ["Dune", "Sand tone"],
+        fog: ["Fog", "Soft neutral grey"], dark: ["Night", "Dark spruce green, easy on the eyes in the evening"],
+        sea: ["Sea", "Deep dark sea blue"], contrast: ["Contrast", "Maximum contrast, stronger lines"]
+      },
+      accents: { water: ["Water", "teal (default)"], fjord: ["Fjord", "blue"], reed: ["Reed", "olive green"], float: ["Float", "orange"], graphite: ["Graphite", "grey"] },
+      sizes: { m: "Normal", lg: "Larger", xl: "Largest" },
+      dens: { comfy: ["Comfortable", "More space"], compact: ["Compact", "Smaller drawings, more items on screen"] },
+      map: ["Pond plan", "Depth contours in the header and footer"],
+      motion: { auto: "Normal", reduce: "Reduced" },
+      motionOs: "Reduced motion is switched on for your device – it always applies here.",
+      reset: "Restore defaults", done: "Done", resetDone: "Default appearance restored", close: "Close"
+    },
+    ru: {
+      title: "Оформление", note: "Настройки сохраняются только в этом браузере.",
+      noStore: "В этом браузере сохранить настройки не удаётся – они действуют до перезагрузки страницы.",
+      gTheme: "Фон и цвета", gAccent: "Акцентный цвет", gSize: "Размер текста", gDensity: "Плотность отображения", gMap: "Фоновый узор", gMotion: "Анимация",
+      themes: {
+        light: ["Белый", "Чистый белый фон (по умолчанию)"], paper: ["Бумага", "Тёплый бумажный тон"],
+        ice: ["Лёд", "Холодный голубовато-серый"], dune: ["Дюны", "Песочный тон"],
+        fog: ["Туман", "Мягкий нейтральный серый"], dark: ["Ночь", "Тёмная хвойная зелень, удобно вечером"],
+        sea: ["Море", "Глубокий тёмно-синий цвет моря"], contrast: ["Контраст", "Максимальный контраст, более чёткие линии"]
+      },
+      accents: { water: ["Вода", "бирюзовый (по умолчанию)"], fjord: ["Фьорд", "синий"], reed: ["Тростник", "оливково-зелёный"], float: ["Поплавок", "оранжевый"], graphite: ["Графит", "серый"] },
+      sizes: { m: "Обычный", lg: "Крупнее", xl: "Самый крупный" },
+      dens: { comfy: ["Свободно", "Больше пространства"], compact: ["Компактно", "Меньше чертежи, больше позиций на экране"] },
+      map: ["План прудов", "Контуры глубин в шапке и подвале страницы"],
+      motion: { auto: "Обычная", reduce: "Уменьшенная" },
+      motionOs: "На вашем устройстве включено уменьшение анимации – здесь оно действует всегда.",
+      reset: "Восстановить по умолчанию", done: "Готово", resetDone: "Восстановлено оформление по умолчанию", close: "Закрыть"
+    },
+    pl: {
+      title: "Wygląd", note: "Ustawienia są zapisywane tylko w tej przeglądarce.",
+      noStore: "W tej przeglądarce nie można zapisać ustawień – obowiązują do ponownego wczytania strony.",
+      gTheme: "Tło i kolory", gAccent: "Kolor akcentu", gSize: "Rozmiar tekstu", gDensity: "Gęstość widoku", gMap: "Wzór tła", gMotion: "Animacje",
+      themes: {
+        light: ["Biały", "Czyste białe tło (domyślne)"], paper: ["Papier", "Ciepły odcień papieru"],
+        ice: ["Lód", "Chłodny niebieskoszary"], dune: ["Wydma", "Odcień piasku"],
+        fog: ["Mgła", "Delikatny neutralny szary"], dark: ["Noc", "Ciemna zieleń świerku, wygodna wieczorem"],
+        sea: ["Morze", "Głęboki, ciemny błękit morza"], contrast: ["Kontrast", "Najwyższy kontrast, wyraźniejsze linie"]
+      },
+      accents: { water: ["Woda", "morski (domyślny)"], fjord: ["Fiord", "niebieski"], reed: ["Trzcina", "oliwkowa zieleń"], float: ["Spławik", "pomarańczowy"], graphite: ["Grafit", "szary"] },
+      sizes: { m: "Normalny", lg: "Większy", xl: "Największy" },
+      dens: { comfy: ["Wygodny", "Więcej przestrzeni"], compact: ["Kompaktowy", "Mniejsze rysunki, więcej pozycji na ekranie"] },
+      map: ["Plan stawów", "Izobaty w nagłówku i stopce"],
+      motion: { auto: "Normalne", reduce: "Ograniczone" },
+      motionOs: "Na Twoim urządzeniu włączono ograniczenie animacji – tutaj obowiązuje ono zawsze.",
+      reset: "Przywróć domyślne", done: "Gotowe", resetDone: "Przywrócono domyślny wygląd", close: "Zamknij"
     }
   };
-  var lang = function () { return root.lang === "de" ? "de" : "lt"; };
+  var lang = function () { return S[root.lang] ? root.lang : "lt"; };
   var D = function () { return S[lang()]; };
 
   /* ---------- drawings ---------- */
@@ -3384,12 +3772,16 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{setHdr();
   function fit() {
     fitRaf = 0;
     if (!hdrIn || !logo || !hdrR) return;
-    hdr.classList.remove("lk-tight");
-    var cs = getComputedStyle(hdrIn), gap = parseFloat(cs.columnGap) || 0;
-    var left = nav && nav.getClientRects().length ? nav.getBoundingClientRect().left + nav.scrollWidth : logo.getBoundingClientRect().right;
-    /* the row's content edge (an overflowing .hdr-r loses its auto margin and sits right after the logo) */
-    var edge = hdrIn.getBoundingClientRect().right - (parseFloat(cs.paddingRight) || 0);
-    if (left + gap + hdrR.getBoundingClientRect().width > edge + .5) hdr.classList.add("lk-tight");
+    hdr.classList.remove("lk-tight", "lk-tight2");
+    var over = function () {
+      var cs = getComputedStyle(hdrIn), gap = parseFloat(cs.columnGap) || 0;
+      var left = nav && nav.getClientRects().length ? nav.getBoundingClientRect().left + nav.scrollWidth : logo.getBoundingClientRect().right;
+      /* the row's content edge (an overflowing .hdr-r loses its auto margin and sits right after the logo) */
+      var edge = hdrIn.getBoundingClientRect().right - (parseFloat(cs.paddingRight) || 0);
+      return left + gap + hdrR.getBoundingClientRect().width > edge + .5;
+    };
+    /* step 1: less nav padding; step 2 (long CTA texts, e.g. RU): the header CTA gives way – the hero has the same button */
+    if (over()) { hdr.classList.add("lk-tight"); if (over()) hdr.classList.add("lk-tight2"); }
     position(); /* the header moved or changed size (resize, rotation, fonts): keep the open popover under its button */
   }
   function refit() { if (!fitRaf) fitRaf = requestAnimationFrame(fit); }
