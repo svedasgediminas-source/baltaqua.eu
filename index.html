@@ -3808,6 +3808,85 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{setHdr();
 </script>
 <!-- motion libraries (optional: the page is complete without them). GSAP 3.12.5 (GreenSock standard licence, free),
      Lenis 1.1.13 (MIT). Loaded with integrity hashes; if a CDN fails nothing changes except that nothing moves. -->
+<style id="ba-blueprint">
+/* ===== "Brėžinys" pass (2026-10-27) =====
+   One idea: the hero is the pond's survey sheet printed as a blueprint – cobalt paper, a fine drafting grid,
+   the pond plan in white ink, amber for the one action. Below it a pale water-grey page with white drawing tiles. */
+:root{
+  --bp:#123E5E; --bp-2:#17496C; --bp-ink:#F2F7FA; --bp-ink-2:#BCD3E2; --bp-grid:rgba(188,211,226,.09); --bp-grid-2:rgba(188,211,226,.16);
+  --bg:#EDF2F5; --bg-2:#E3EBF0; --line:#D3DEE5; --line-2:#B9C8D2;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bp:#0D2C44; --bp-2:#11344F; --bg:#0E1A22; --bg-2:#122029; --line:#20323D; --line-2:#33474F}
+}
+:root[data-theme="dark"]{--bp:#0D2C44; --bp-2:#11344F; --bg:#0E1A22; --bg-2:#122029; --line:#20323D; --line-2:#33474F}
+
+html body .hdr{background:var(--surface)}
+
+/* ---- hero: blueprint sheet ---- */
+html body .hero-top{
+  --ink:var(--bp-ink); --ink-2:var(--bp-ink-2); --ink-3:#93B2C6; --bg:var(--bp); --map:#DCEAF3; --map-o:.32; --map-oi:.52; --map-o0:.85;
+  --depth:#8CC3EA; --depth-o:.12; --accent-tx:var(--sig); --line-2:rgba(188,211,226,.4); --focus:var(--bp-ink);
+  color:var(--ink);
+  background:
+    linear-gradient(var(--bp-grid-2) 1px,transparent 1px) 0 0/120px 120px,
+    linear-gradient(90deg,var(--bp-grid-2) 1px,transparent 1px) 0 0/120px 120px,
+    linear-gradient(var(--bp-grid) 1px,transparent 1px) 0 0/24px 24px,
+    linear-gradient(90deg,var(--bp-grid) 1px,transparent 1px) 0 0/24px 24px,
+    radial-gradient(110% 100% at 75% 30%,var(--bp-2),var(--bp));
+}
+html body .hero .hmap{left:30%}
+html body .hero .hmap svg{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 22%);mask-image:linear-gradient(90deg,transparent 0,#000 22%)}
+html body .hero .anno{background:var(--bp);border-color:rgba(188,211,226,.45)}
+html body .hero-in{padding-top:clamp(60px,8.6vw,132px);padding-bottom:clamp(56px,7vw,112px)}
+html body .hero-copy{max-width:680px}
+html body .hero h1{font-weight:700;font-size:clamp(46px,6.6vw,96px);line-height:1;letter-spacing:-.024em;color:var(--bp-ink)}
+html body .hero .lead{color:var(--bp-ink-2)}
+html body .hero-top .btn-p{background:var(--sig);color:var(--on-sig)}
+html body .hero-top .btn-p:hover{background:#F2B53A}
+html body .hero-top .btn-g{color:var(--bp-ink);border-color:rgba(242,247,250,.6)}
+html body .hero-top .btn-g:hover{background:rgba(242,247,250,.1);border-color:var(--bp-ink)}
+
+/* the three steps: a white strip under the sheet */
+html body .flow-w{background:var(--surface);border-top:0}
+html body .xsec{background:var(--bg)}
+
+/* ---- sections ---- */
+html body .sec-h h2{font-weight:700;font-size:clamp(34px,3.8vw,54px);line-height:1.04;letter-spacing:-.022em}
+
+/* ---- drawing tiles: white plates on the water-grey page ---- */
+html body .tile{border-color:transparent;border-radius:6px}
+html body .card:hover .tile{border-color:transparent;box-shadow:0 12px 26px -16px rgba(18,62,94,.5)}
+html body .price{font:700 20px/1.2 var(--fh)}
+
+@media (max-width:759px){
+  html body .hero .hmap{left:0;opacity:.45}
+  html body .hero h1{font-size:clamp(40px,11vw,56px)}
+}
+@media (prefers-reduced-motion:reduce){html body .card:hover .tile{box-shadow:none}}
+
+/* ---- section rail: on a computer the sections and catalogue groups stay one click away on the left;
+   narrower screens get a "Skyriai" button that opens the same list ---- */
+.ba-rail{display:none}
+.ba-rail ul{list-style:none;margin:0;padding:0}
+.ba-rail h2{font:600 13.5px/1.2 var(--fb);color:var(--ink-3);margin:0 0 10px 10px}
+.ba-rail a{display:block;padding:8px 10px;border-left:2px solid transparent;color:var(--ink-2);font:500 15px/1.25 var(--fb);text-decoration:none}
+.ba-rail a:hover{color:var(--ink);border-left-color:var(--line-2)}
+.ba-rail a[aria-current="true"]{color:var(--ink);font-weight:600;border-left-color:var(--sig)}
+.ba-rail a:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.ba-rail .sub a{padding:6px 10px 6px 24px;font-size:14px}
+.ba-rail .top{margin-top:14px;font-size:14px;color:var(--ink-3)}
+.ba-rail-b{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:25;display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 16px 0 13px;border:1px solid var(--ink);border-radius:23px;background:var(--surface);color:var(--ink);font:600 14.5px/1 var(--fb);box-shadow:0 6px 18px -8px rgba(18,62,94,.45);opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity var(--t),transform var(--t)}
+.ba-rail-b.on{opacity:1;transform:none;pointer-events:auto}
+.ba-rail-b svg{width:18px;height:18px}
+.ba-rail.pop{display:block;position:fixed;left:16px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:26;width:min(300px,calc(100vw - 32px));max-height:70vh;overflow:auto;padding:16px 10px 14px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);box-shadow:0 18px 40px -18px rgba(18,62,94,.55)}
+@media (min-width:1024px){
+  html body main#main,html body .foot{margin-left:220px}
+  .ba-rail,.ba-rail.pop{display:block;position:fixed;left:0;top:var(--rail-top,73px);bottom:0;width:220px;max-height:none;z-index:20;overflow:auto;padding:22px 14px 24px 18px;border:0;border-right:1px solid var(--line);border-radius:0;box-shadow:none;background:var(--surface)}
+  .ba-rail-b{display:none}
+}
+@media (prefers-reduced-motion:reduce){.ba-rail-b{transition:none}}
+</style>
 <script src="vendor/gsap-3.12.5.min.js" defer></script>
 <script src="vendor/ScrollTrigger-3.12.5.min.js" defer></script>
 <script src="vendor/lenis-1.1.13.min.js" defer></script>
@@ -3909,6 +3988,62 @@ document.addEventListener("DOMContentLoaded", function () {
   /* if someone reloads the page while the motion setting is changed in Išvaizda: turn Lenis off right away */
   window.addEventListener("ba-look", function () { if (reduced() && window.baLenis) { lenis.destroy(); window.baLenis = null; } });
 });
+</script>
+<script data-mod="ba-rail">
+/* section rail: labels are read from the sections' own headings, so they follow the language switch */
+(function () {
+  var L = { lt: ["Skyriai", "Į viršų"], de: ["Bereiche", "Nach oben"], en: ["Sections", "Back to top"], ru: ["Разделы", "Наверх"], pl: ["Sekcje", "Do góry"] };
+  var lg = function () { return L[document.documentElement.lang] || L.lt; };
+  var txt = function (el) { return el ? el.textContent.replace(/\s+/g, " ").trim() : ""; };
+  var esc = function (t) { return t.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var xs = document.querySelector(".xsec"); if (xs && !xs.id) xs.id = "pjuvis";
+  var nav = document.createElement("nav"); nav.className = "ba-rail"; nav.id = "baRail";
+  var btn = document.createElement("button"); btn.type = "button"; btn.className = "ba-rail-b"; btn.setAttribute("aria-controls", "baRail"); btn.setAttribute("aria-expanded", "false");
+  document.body.appendChild(nav); document.body.appendChild(btn);
+  var key = "";
+  function items() {
+    var out = [];
+    var h = document.getElementById("howT"); if (h && txt(h)) out.push(["how", txt(h)]);
+    if (xs) { var x = xs.querySelector("h2"); if (txt(x)) out.push([xs.id, txt(x)]); }
+    var c = document.getElementById("catalogT"); if (c && txt(c)) out.push(["catalog", txt(c)]);
+    /* catalogue groups are not repeated here: the catalogue has its own group list on the left */
+    var q = document.getElementById("qT"); if (q && txt(q)) out.push(["quote", txt(q)]);
+    return out;
+  }
+  function build() {
+    var it = items(), k = document.documentElement.lang + it.map(function (x) { return x[1]; }).join("|");
+    if (k === key) return; key = k;
+    var t = lg();
+    nav.setAttribute("aria-label", t[0]);
+    nav.innerHTML = "<h2>" + esc(t[0]) + "</h2><ul>" + it.map(function (x) {
+      return '<li' + (x[2] ? ' class="sub"' : "") + '><a href="#' + x[0] + '" data-sec="' + x[0] + '">' + esc(x[1]) + "</a></li>";
+    }).join("") + '</ul><a class="top" href="#top">' + esc(t[1]) + "</a>";
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>' + esc(t[0]) + "</span>";
+    watch(it);
+  }
+  var io = null, vis = {};
+  function watch(it) {
+    if (io) io.disconnect(); vis = {};
+    io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { vis[e.target.id] = e.isIntersecting ? e.intersectionRect.height : 0; });
+      var best = null, bh = 0; for (var id in vis) if (vis[id] > bh) { bh = vis[id]; best = id; }
+      nav.querySelectorAll("a[data-sec]").forEach(function (a) { a.setAttribute("aria-current", String(a.dataset.sec === best)); });
+    }, { threshold: [0, .1, .25, .5, .75, 1] });
+    it.forEach(function (x) { var el = document.getElementById(x[0]); if (el && !(x[0] === "catalog" && it.some(function (y) { return y[2]; }))) io.observe(el); });
+  }
+  function close() { nav.classList.remove("pop"); btn.setAttribute("aria-expanded", "false"); }
+  btn.addEventListener("click", function () { var on = !nav.classList.contains("pop"); nav.classList.toggle("pop", on); btn.setAttribute("aria-expanded", String(on)); if (on) { var a = nav.querySelector("a"); if (a) a.focus(); } });
+  nav.addEventListener("click", function (e) { if (e.target.closest("a")) close(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && nav.classList.contains("pop")) { close(); btn.focus(); } });
+  document.addEventListener("click", function (e) { if (nav.classList.contains("pop") && !nav.contains(e.target) && !btn.contains(e.target)) close(); });
+  /* the rail starts under the header; the button shows once the hero is scrolled past */
+  var hdr = document.getElementById("hdr");
+  function pos() { if (hdr) document.documentElement.style.setProperty("--rail-top", Math.max(0, Math.round(hdr.getBoundingClientRect().bottom)) + "px"); btn.classList.toggle("on", scrollY > 500 || nav.classList.contains("pop")); }
+  addEventListener("scroll", pos, { passive: true }); addEventListener("resize", pos); pos();
+  new MutationObserver(function () { build(); }).observe(document.getElementById("main"), { childList: true, subtree: true, characterData: true });
+  new MutationObserver(function () { build(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+  build();
+})();
 </script>
 </body>
 </html>
